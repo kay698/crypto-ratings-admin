@@ -1,21 +1,12 @@
 import React, { useContext, useEffect } from "react";
-import { Layout, Typography } from "antd";
+import { Layout } from "antd";
 import { FlexibleDiv } from "../Box/styles";
 import { HeaderStyles } from "./styles";
-import { BiArrowBack as BackIcon } from "react-icons/bi";
+import Logo from "../../assets/svgs/logo-white.svg";
+import { AiOutlineLogout, AiOutlineMenu } from "react-icons/ai";
 
-const DashboardHeader = ({}) => {
+const DashboardHeader = ({ setShowMobileSideBar, showMobileSideBar }) => {
   const { Header } = Layout;
-  const parentRoutes = [
-    "/",
-    "/recipes",
-    "/products",
-    "/user",
-    "/surveys",
-    "/team",
-    "/whatsapp-messaging",
-    "/conversations",
-  ];
 
   return (
     <HeaderStyles>
@@ -25,21 +16,15 @@ const DashboardHeader = ({}) => {
           height="100%"
           justifyContent="space-between"
         >
-          <FlexibleDiv
-            width="max-content"
-            flexDir="column"
-            height="max-content"
-            className="header__sub__textWrap"
-            alignItems="flex-start"
-          >
-            {/* <img
-              src={MobileMenuIcon}
-              alt=""
-              onClick={() => setShowMobileSideBar(true)}
-            /> */}
-          </FlexibleDiv>
-          {/* back icon for sub screens mobile view  */}
-          {/* right section for large screen */}\
+          <img src={Logo} alt="" />
+
+          <span>
+            Log Out <AiOutlineLogout />
+          </span>
+          <AiOutlineMenu
+            className="menu"
+            onClick={() => setShowMobileSideBar(!showMobileSideBar)}
+          />
         </FlexibleDiv>
       </Header>
     </HeaderStyles>
