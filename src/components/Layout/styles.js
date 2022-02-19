@@ -9,14 +9,15 @@ export const DashboardLayoutStyles = styled.div`
     height: max-content;
     margin: 70px 0 0 150px;
     min-height: calc(100vh - 70px);
-    background-color: #e5e5e5;
-    padding: 0;
+    background: #006eef11;
+    background-color: ;
+    padding: 30px;
     position: relative;
 
     @media (max-width: 800px) {
       width: 100vw;
       margin-left: 0;
-      padding: 0;
+      padding: 30px 20px;
     }
   }
 `;

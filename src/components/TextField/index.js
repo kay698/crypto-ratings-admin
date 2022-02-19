@@ -6,11 +6,10 @@ export default styled(Input)`
   margin: ${({ margin }) => margin};
   height: ${({ height }) => height || "60px"};
   padding: ${({ padding }) => padding};
-  background: ${({ background }) => background || "#9342f6"};
-  background: rgba(0, 110, 239, 0.1);
+  background: ${({ background }) => background || "rgba(0, 110, 239, 0.1)"};
   border: 1px solid rgba(0, 110, 239, 0.3);
   box-sizing: border-box;
-  border-radius: 12px;
+  border-radius: ${({ radius }) => radius || "12px"};
   box-shadow: none;
   font-size: 16px;
   color: #828282;
@@ -23,11 +22,10 @@ export default styled(Input)`
     margin: ${({ margin }) => margin};
     height: ${({ height }) => height || "60px"};
     padding: ${({ padding }) => padding};
-    background: ${({ background }) => background || "#9342f6"};
-    background: rgba(0, 110, 239, 0.1);
+    background: ${({ background }) => background || "rgba(0, 110, 239, 0.1)"};
     border: 1px solid rgba(0, 110, 239, 0.3);
     box-sizing: border-box;
-    border-radius: 12px;
+    border-radius: ${({ radius }) => radius || "12px"};
     box-shadow: none;
     font-size: 16px;
     input {
