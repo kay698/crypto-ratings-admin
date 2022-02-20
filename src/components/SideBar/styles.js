@@ -21,7 +21,7 @@ export const DashboardSideBarStyles = styled.div`
     }
 
     .links {
-      padding: 10px 0;
+      padding: 15px 0;
       margin: 0 0 15px 0;
       opacity: 0.5;
       cursor: pointer;
@@ -33,13 +33,13 @@ export const DashboardSideBarStyles = styled.div`
       span {
         font-size: 14px;
         color: #006eef;
-        margin: 10px 0;
+        margin: 10px 0 0 0;
       }
     }
     .active {
       opacity: 1;
       background: #006eef11;
-      border-right: 4px solid #006eef;
+      border-right: 6px solid #006eef;
     }
   }
 `;
@@ -76,7 +76,7 @@ export const MobileDrawer = styled(Drawer)`
       span {
         font-size: 16px;
         color: #006eef;
-        margin: 10px 0;
+        margin: 10px 0 0 0;
       }
     }
     .active {

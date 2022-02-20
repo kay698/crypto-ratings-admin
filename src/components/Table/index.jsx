@@ -2,13 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { TableStyles } from "./styles";
 import { Table } from "antd";
 import { OverFlowScrollBar } from "../OverflowScroll/styles";
-import { MainContext } from "../../context/MainContext";
 
 const CustomTable = ({
-  formIsLoading,
   columns,
   func,
-  setTotal,
   maxWidth,
   defaultPageSize,
   setSelectedData,
@@ -21,32 +18,26 @@ const CustomTable = ({
     pageSize: defaultPageSize || 10,
     total: 0,
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState(`page=1&perPage=${defaultPageSize || 10}`);
   const [pageSize, setPageSize] = useState(defaultPageSize || 10);
-  const {
-    state: { user },
-  } = useContext(MainContext);
 
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const { data, total, current } = await func(query);
-        setPagination((p) => ({ ...p, total, current, pageSize }));
-        setTableData(data);
-        setIsLoading(false);
-        if (setTotal) {
-          setTotal(total);
-        }
-      } catch (e) {
-        console.log(e);
-        setIsLoading(false);
-      }
-    }
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     setIsLoading(true);
+  //     try {
+  //       const { data, total, current } = await func(query);
+  //       setPagination((p) => ({ ...p, total, current, pageSize }));
+  //       setTableData(data);
+  //       setIsLoading(false);
+  //     } catch (e) {
+  //       console.log(e);
+  //       setIsLoading(false);
+  //     }
+  //   }
 
-    (!formIsLoading || !!formIsLoading) && fetchData();
-  }, [query, setIsLoading, func, pageSize, formIsLoading, setTotal]);
+  //   (!formIsLoading || !!formIsLoading) && fetchData();
+  // }, [query, setIsLoading, func, pageSize, formIsLoading, setTotal]);
 
   function handleTabChange(pagination) {
     const { current, pageSize } = pagination;
@@ -61,8 +52,6 @@ const CustomTable = ({
       }
     },
   };
-
-  console.log(tableData);
 
   return (
     <TableStyles>

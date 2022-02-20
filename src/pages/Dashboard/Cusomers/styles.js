@@ -1,14 +1,14 @@
 import styled from "styled-components";
 import { Drawer } from "antd";
 
-export const GiftcardStyles = styled.div`
+export const CustomersStyles = styled.div`
   width: 100%;
   h2 {
     width: max-content;
   }
   .header_wrap {
     input {
-      margin-right: 10px !important;
+      margin-right: 10px;
     }
     @media (max-width: 950px) {
       flex-direction: column;

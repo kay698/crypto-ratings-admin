@@ -7,27 +7,57 @@ import Button from "../../../components/Button";
 import CustomTable from "../../../components/Table";
 import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi";
 import { TableDrawer } from "../../../components/Drawer";
-import { GiftcardStyles } from "./styles";
+import { CustomersStyles } from "./styles";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiEdit } from "react-icons/fi";
+import Phone from "../../../assets/svgs/call.svg";
+import Mail from "../../../assets/svgs/sms.svg";
+import Trash from "../../../assets/svgs/trash.svg";
 
-function Giftcard() {
+function Customers() {
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState();
-  const [showDrawer, setShowDrawer] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(true);
 
   const columns = [
     {
-      title: "Categories",
-      dataIndex: "categories",
-      key: "categories",
-      render: (card) => card.category,
+      title: "SN",
+      dataIndex: "sn",
+      key: "sn",
+      render: (user) => user.category,
     },
 
     {
-      title: "Giftcard",
-      dataIndex: "giftcard",
-      render: (card) => card.giftcard,
+      title: "Email address",
+      dataIndex: "email",
+      key: "email",
+      render: (user) => user.email,
+    },
+    {
+      title: "Phone number",
+      dataIndex: "phone",
+      key: "phone",
+      render: (user) => user.emal,
+    },
+    {
+      title: "Last active",
+      dataIndex: "active",
+      key: "active",
+      render: (user) =>
+        user.active === "Active" ? (
+          <p
+            style={{
+              padding: "5px",
+              borderRadius: "10px",
+              background: "#27AE601A",
+              color: "#27AE60",
+            }}
+          >
+            {user.active}
+          </p>
+        ) : (
+          user.active
+        ),
     },
 
     {
@@ -62,65 +92,6 @@ function Giftcard() {
   //   }
   // };
 
-  const cardsData = [
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-  ];
-
   const content = (
     <>
       <p style={{ opacity: ".5" }}>
@@ -135,10 +106,10 @@ function Giftcard() {
   );
   return (
     <DashboardLayout>
-      <GiftcardStyles>
+      <CustomersStyles>
         <FlexibleDiv>
           <FlexibleDiv justifyContent="space-between" className="header_wrap">
-            <Typography.Title level={2}>Giftcards</Typography.Title>
+            <Typography.Title level={2}>Customers</Typography.Title>
             <FlexibleDiv
               width="80%"
               justifyContent="space-between"
@@ -164,46 +135,41 @@ function Giftcard() {
             searchResults={searchResults}
           />
         </FlexibleDiv>
-      </GiftcardStyles>
+      </CustomersStyles>
       <TableDrawer visible={showDrawer} setDrawer={setShowDrawer}>
         <FlexibleDiv justifyContent="space-between">
-          <Typography.Title level={4}>Amazon</Typography.Title>
-          <Button height="50px" boxShadow="none">
-            + New Giftcard
+          <Typography.Title level={4}>Customer Contact Info</Typography.Title>
+          <Button height="50px" boxShadow="none" background="red" hover="red">
+            <img src={Trash} alt="" />
+            Delete Customers
           </Button>
         </FlexibleDiv>
         <FlexibleDiv flexDir="column" margin="20px 0 0 0">
-          {cardsData.map((item, idx) => (
-            <FlexibleDiv
-              justifyContent="space-between"
-              key={idx}
-              className="drawerItems_wrap"
-            >
-              <span>
-                {item.cardData}&nbsp; | &nbsp;<b>{item.price}</b>
-              </span>
-              <Popover
-                placement="bottomLeft"
-                // title={text}
-                content={content}
-                trigger="click"
-              >
-                <Button
-                  width="max-content"
-                  height="max-content"
-                  background="transparent"
-                  boxShadow="none"
-                  hover="transparent"
-                >
-                  <BiDotsVerticalRounded className="menu" />
-                </Button>
-              </Popover>
-            </FlexibleDiv>
-          ))}
+          <FlexibleDiv justifyContent="flex-start">
+            <img src={Mail} alt="" />
+            <Typography.Title level={5}>gianalubin@gmail.com</Typography.Title>
+            <span className="copy">Copy email</span>
+          </FlexibleDiv>
+          <FlexibleDiv justifyContent="flex-start" margin="20px 0">
+            <img src={Phone} alt="" />
+            <Typography.Title level={5}>(702) 555-0122</Typography.Title>
+            <span className="copy">Copy phone</span>
+          </FlexibleDiv>
+
+          <FlexibleDiv
+            className="lastActive"
+            flexDir="column"
+            alignItems="flex-start"
+          >
+            <span>Last active</span>
+            <p level={5}>
+              <b>5 hours ago</b>
+            </p>
+          </FlexibleDiv>
         </FlexibleDiv>
       </TableDrawer>
     </DashboardLayout>
   );
 }
 
-export default Giftcard;
+export default Customers;
