@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Giftcard from "./pages/Dashboard/GiftCards";
 import Crypto from "./pages/Dashboard/Crypto";

@@ -6,7 +6,7 @@ export const TableStyles = styled.section`
   padding: 0;
   background-color: transparent;
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: 20px;
   .ant-table-wrapper {
     border-radius: 0;
   }
@@ -15,7 +15,9 @@ export const TableStyles = styled.section`
   }
   .ant-table-thead > tr > th {
     background: transparent !important;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #bdbdbd;
+    border-top: 1px solid #bdbdbd;
+
     color: #4f4f4f;
     font-weight: bold;
     ::before {
@@ -24,7 +26,7 @@ export const TableStyles = styled.section`
   }
   .ant-table-tbody > tr > td {
     background: transparent !important;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #bdbdbd;
     color: #4f4f4f;
   }
 `;

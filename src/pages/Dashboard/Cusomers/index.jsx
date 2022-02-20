@@ -17,7 +17,7 @@ import Trash from "../../../assets/svgs/trash.svg";
 function Customers() {
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState();
-  const [showDrawer, setShowDrawer] = useState(true);
+  const [showDrawer, setShowDrawer] = useState(false);
 
   const columns = [
     {
