@@ -146,32 +146,10 @@ input[type="number"] {
 }
 
 .ant-form-item-explain-error {
-  padding-left: 25px;
-  position: relative;
-  font-style: italic;
+  margin: 5px 0;
+  font-size: 10px;
 }
-.ant-form-item-explain-error::before {
-  width: 1px;
-  height: 12px;
-  content: "";
-  position: absolute;
-  left: 18px;
-  top: 6px;
-  background-color: red;
-}
-.ant-form-item-explain-error::after {
-  content: "!";
-  position: absolute;
-  left: 0;
-  top: 6px;
-  background-color: red;
-  color: white;
-  padding: 0.5px 5px;
-  font-size: 8px;
-  border-radius: 100%;
-  font-weight: bold;
-  font-style: normal;
-}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -200,4 +178,9 @@ h1 {
 }
 .ant-popover-inner {
   border-radius: 10px !important;
+}
+.ant-select-dropdown-hidden:first-child,
+.ant-select-dropdown:first-child {
+  max-height: 300px !important;
+  overflow: auto !important;
 }

@@ -59,9 +59,25 @@ const Login = () => {
             <Title level={5}> Login</Title>
             <Form form={form} onFinish={handleFormSubmit}>
               <Form.Item name="email">
-                <Input placeholder="Email" />
+                <Input
+                  placeholder="Email"
+                  rules={[
+                    {
+                      required: true,
+                      message: "This field is required",
+                    },
+                  ]}
+                />
               </Form.Item>
-              <Form.Item name="password">
+              <Form.Item
+                name="password"
+                rules={[
+                  {
+                    required: true,
+                    message: "This field is required",
+                  },
+                ]}
+              >
                 <Input.Password
                   className="passwordInput"
                   placeholder="password"

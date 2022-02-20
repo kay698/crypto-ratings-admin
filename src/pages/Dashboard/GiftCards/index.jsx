@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DashboardLayout from "../../../components/Layout";
 import Input from "../../../components/TextField";
 import { FlexibleDiv } from "../../../components/Box/styles";
-import { Typography, Popover } from "antd";
+import { Typography, Popover, Form, notification } from "antd";
 import Button from "../../../components/Button";
 import CustomTable from "../../../components/Table";
 import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi";
@@ -10,11 +10,99 @@ import { TableDrawer } from "../../../components/Drawer";
 import { GiftcardStyles } from "./styles";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiEdit } from "react-icons/fi";
+import { ModalWrapper } from "../../../components/ModalStylesWrap";
+import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
+import Select from "../../../components/Select";
+import { giftCards, currencies } from "../../../utils/dataHelpers/selectData";
+import {
+  addGiftCard,
+  updateGiftCard,
+  getAllGiftCards,
+  getSingleGiftCard,
+  deleteGiftCard,
+  deleteGiftCardCategory,
+  addGiftCardCategory,
+} from "../../../network/giftcards";
 
 function Giftcard() {
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState();
   const [showDrawer, setShowDrawer] = useState(false);
+  const [form] = Form.useForm();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
+  const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false);
+  const [card, setCard] = useState();
+  const [currency, setCurrency] = useState();
+
+  const { Option } = Select;
+
+  const handleCardCategory = (value) => {
+    setCard(value);
+  };
+  const handleCurrencyCategory = (value) => {
+    setCurrency(value);
+  };
+  // create card category
+  async function handleCreateCategory(values) {
+    setIsLoading(true);
+    const payload = {
+      ...values,
+    };
+    try {
+      const data = await addGiftCardCategory(payload);
+      setShowCreateCategoryModal(false);
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
+
+  // add gift card
+  async function handleFormSubmit(values) {
+    setIsLoading(true);
+    const payload = {
+      ...values,
+      giftCardCategoryId: card,
+      currency: currency,
+    };
+    try {
+      const data = await addGiftCard(payload);
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
 
   const columns = [
     {
@@ -153,7 +241,11 @@ function Giftcard() {
                 radius="8px"
                 prefix={<BiSearch />}
               />
-              <Button height="50px" boxShadow="none">
+              <Button
+                height="50px"
+                boxShadow="none"
+                onClick={() => setShowCreateCategoryModal(true)}
+              >
                 + Add New Category
               </Button>
             </FlexibleDiv>
@@ -202,6 +294,134 @@ function Giftcard() {
           ))}
         </FlexibleDiv>
       </TableDrawer>
+
+      {/* create gift card */}
+      <ModalWrapper
+        visible={showCreateGiftCardModal}
+        footer={null}
+        closable={true}
+        onCancel={() => setShowCreateGiftCardModal(false)}
+      >
+        <FlexibleDiv flexDir="column">
+          <Typography.Title level={5}>Giftcard</Typography.Title>
+          <FlexibleDiv margin="30px 0">
+            <Form
+              form={form}
+              onFinish={handleFormSubmit}
+              style={{ width: "100%" }}
+            >
+              <Form.Item
+                name="title"
+                rules={[
+                  {
+                    required: true,
+                    message: "This field is required",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Gift card"
+                  background="#F5FCFF"
+                  height="50px"
+                />
+              </Form.Item>
+              <Form.Item>
+                <Select
+                  placeholder="Select Category"
+                  className="selectInput"
+                  onChange={handleCardCategory}
+                  value={card}
+                >
+                  {giftCards.map((value, index) => (
+                    <Option value={value} key={index}>
+                      {value}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <FlexibleDiv
+                flexWrap="nowrap"
+                justifyContent="space-between"
+                alignItems="flex-start"
+              >
+                <Form.Item
+                  rules={[
+                    {
+                      required: true,
+                      message: "This field is required",
+                    },
+                  ]}
+                  name="amount"
+                >
+                  <Input
+                    prefix={<span className="prefix">NGN</span>}
+                    placeholder="Trading rate"
+                    background="#F5FCFF"
+                    height="50px"
+                    type="number"
+                  />
+                </Form.Item>
+                <Select
+                  className="selectInput"
+                  onChange={handleCurrencyCategory}
+                  value={currency}
+                  width="120px"
+                  placeholder="/ $"
+                >
+                  {currencies.map((value, index) => (
+                    <Option value={value.title} key={index}>
+                      {value.sign}
+                    </Option>
+                  ))}
+                </Select>
+              </FlexibleDiv>
+              <Button type="primary" htmlType="submit" width="100%">
+                {isLoading && <LoadingOutlined />}
+                Save
+              </Button>
+            </Form>
+          </FlexibleDiv>
+        </FlexibleDiv>
+      </ModalWrapper>
+
+      {/* create category */}
+      <ModalWrapper
+        visible={showCreateCategoryModal}
+        footer={null}
+        closable={true}
+        onCancel={() => setShowCreateCategoryModal(false)}
+      >
+        <FlexibleDiv flexDir="column">
+          <Typography.Title level={5}>Giftcard</Typography.Title>
+          <FlexibleDiv margin="30px 0">
+            <Form
+              form={form}
+              onFinish={handleCreateCategory}
+              style={{ width: "100%" }}
+            >
+              <Form.Item
+                name="title"
+                rules={[
+                  {
+                    required: true,
+                    message: "This field is required",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Card Category"
+                  background="#F5FCFF"
+                  height="50px"
+                />
+              </Form.Item>
+              <Button type="primary" htmlType="submit" width="100%">
+                {isLoading && <LoadingOutlined />}
+                Save
+              </Button>
+            </Form>
+          </FlexibleDiv>
+        </FlexibleDiv>
+      </ModalWrapper>
     </DashboardLayout>
   );
 }

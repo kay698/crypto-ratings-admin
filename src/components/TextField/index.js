@@ -11,12 +11,30 @@ export default styled(Input)`
   box-sizing: border-box;
   border-radius: ${({ radius }) => radius || "12px"};
   box-shadow: none;
-  font-size: 16px;
+  font-size: 14px;
   color: #828282;
-  ::placeholder {
-    color: #828282;
+  ::placeholder,
+  .prefix {
+    color: #bdbdbd;
+    font-size: 14px;
+  }
+  .prefix {
+    padding-right: 15px;
+    position: relative;
+    ::before {
+      content: "";
+      width: 1px;
+      background: #bdbdbd;
+      height: 100%;
+      position: absolute;
+      bottom: 0;
+      right: 5px;
+    }
   }
 
+  input {
+    background: ${({ background }) => background || "rgba(0, 110, 239, 0.1)"};
+  }
   .passwordInput {
     width: ${({ width }) => width || "100%"};
     margin: ${({ margin }) => margin};
@@ -27,7 +45,7 @@ export default styled(Input)`
     box-sizing: border-box;
     border-radius: ${({ radius }) => radius || "12px"};
     box-shadow: none;
-    font-size: 16px;
+    font-size: 14px;
     input {
       border: none;
       border-radius: 0;
