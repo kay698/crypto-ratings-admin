@@ -13,9 +13,15 @@ export const updateGiftCard = async function (payload, productId) {
   const { data } = await instance.put(`/products/${productId}`, payload);
   return data;
 };
+export async function getAllGiftCardCategories(payload) {
+  const { data } = await instance.get(
+    `/gift-cards?page=${payload.page}&perPage=${payload.perPage}`
+  );
+  return data;
+}
 
 export const getAllGiftCards = async function (payload) {
-  const { data } = await instance.get(
+  const data = await instance.get(
     `/gift-cards?page=${payload.page}&perPage=${payload.perPage}`
   );
   return data;

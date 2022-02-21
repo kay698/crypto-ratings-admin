@@ -29,4 +29,7 @@ export const TableStyles = styled.section`
     border-bottom: 1px solid #bdbdbd;
     color: #4f4f4f;
   }
+  .menu {
+    cursor: pointer;
+  }
 `;

@@ -25,7 +25,7 @@ const Login = () => {
     try {
       const data = await logInUser(payload);
       sessionStorage.setItem("admin_token", data.token);
-      navigate("/");
+      window.location.replace("/");
       setIsLoading(false);
     } catch (error) {
       if (error.response) {

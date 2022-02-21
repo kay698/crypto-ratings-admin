@@ -25,6 +25,7 @@ export const HeaderStyles = styled.div`
     span {
       font-weight: bold;
       color: #fff;
+      cursor: pointer;
 
       svg {
         font-size: 20px;

@@ -22,6 +22,7 @@ import {
   deleteGiftCard,
   deleteGiftCardCategory,
   addGiftCardCategory,
+  getAllGiftCardCategories,
 } from "../../../network/giftcards";
 
 function Giftcard() {
@@ -32,6 +33,8 @@ function Giftcard() {
   const [isLoading, setIsLoading] = useState(false);
   const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
   const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false);
+  const [giftardsList, setGiftCardsList] = useState([]);
+
   const [card, setCard] = useState();
   const [currency, setCurrency] = useState();
 
@@ -43,6 +46,21 @@ function Giftcard() {
   const handleCurrencyCategory = (value) => {
     setCurrency(value);
   };
+
+  const handleGetAllGiftCards = async () => {
+    setShowDrawer(true);
+    const payload = {
+      page: "1",
+      perPage: "1000",
+    };
+    try {
+      const data = await getAllGiftCards(payload);
+      console.log(data);
+      setGiftCardsList(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   // create card category
   async function handleCreateCategory(values) {
     setIsLoading(true);
@@ -52,6 +70,11 @@ function Giftcard() {
     try {
       const data = await addGiftCardCategory(payload);
       setShowCreateCategoryModal(false);
+      notification.open({
+        message: "Success",
+        description: "Catrgory added",
+        icon: <SmileOutlined style={{ color: "green" }} />,
+      });
       setIsLoading(false);
     } catch (error) {
       if (error.response) {
@@ -72,6 +95,10 @@ function Giftcard() {
       }
     }
   }
+  const closeDrawer = () => {
+    setShowDrawer(false);
+    window.location.replace("/");
+  };
 
   // add gift card
   async function handleFormSubmit(values) {
@@ -109,23 +136,21 @@ function Giftcard() {
       title: "Categories",
       dataIndex: "categories",
       key: "categories",
-      render: (card) => card.category,
+      render: (title, card) => card.title,
     },
-
     {
       title: "Giftcard",
       dataIndex: "giftcard",
-      render: (card) => card.giftcard,
+      render: (cgiftcard, card) => `${card.giftCards}  categories`,
     },
-
     {
       title: "",
       dataIndex: "id",
       key: "id",
-      render: (id, user) => (
+      render: (id, card) => (
         <BiDotsVerticalRounded
           className="menu"
-          onClick={() => setShowDrawer(true)}
+          onClick={handleGetAllGiftCards}
         />
       ),
     },
@@ -149,65 +174,6 @@ function Giftcard() {
   //     console.log(e);
   //   }
   // };
-
-  const cardsData = [
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-    {
-      cardData: "CAD No Receipt ($25 - $100)",
-      price: "NGN 120 / $",
-    },
-  ];
 
   const content = (
     <>
@@ -251,13 +217,17 @@ function Giftcard() {
             </FlexibleDiv>
           </FlexibleDiv>
           <CustomTable
-            func=""
+            func={getAllGiftCardCategories}
             columns={columns}
             searchResults={searchResults}
           />
         </FlexibleDiv>
       </GiftcardStyles>
-      <TableDrawer visible={showDrawer} setDrawer={setShowDrawer}>
+      <TableDrawer
+        visible={showDrawer}
+        setDrawer={setShowDrawer}
+        closeDrawer={closeDrawer}
+      >
         <FlexibleDiv justifyContent="space-between">
           <Typography.Title level={4}>Amazon</Typography.Title>
           <Button height="50px" boxShadow="none">
@@ -265,33 +235,39 @@ function Giftcard() {
           </Button>
         </FlexibleDiv>
         <FlexibleDiv flexDir="column" margin="20px 0 0 0">
-          {cardsData.map((item, idx) => (
-            <FlexibleDiv
-              justifyContent="space-between"
-              key={idx}
-              className="drawerItems_wrap"
-            >
-              <span>
-                {item.cardData}&nbsp; | &nbsp;<b>{item.price}</b>
-              </span>
-              <Popover
-                placement="bottomLeft"
-                // title={text}
-                content={content}
-                trigger="click"
+          {!!giftardsList?.length ? (
+            giftardsList?.map((item, idx) => (
+              <FlexibleDiv
+                justifyContent="space-between"
+                key={idx}
+                className="drawerItems_wrap"
               >
-                <Button
-                  width="max-content"
-                  height="max-content"
-                  background="transparent"
-                  boxShadow="none"
-                  hover="transparent"
+                <span>
+                  {item.cardData}&nbsp; | &nbsp;<b>{item.price}</b>
+                </span>
+                <Popover
+                  placement="bottomLeft"
+                  // title={text}
+                  content={content}
+                  trigger="click"
                 >
-                  <BiDotsVerticalRounded className="menu" />
-                </Button>
-              </Popover>
+                  <Button
+                    width="max-content"
+                    height="max-content"
+                    background="transparent"
+                    boxShadow="none"
+                    hover="transparent"
+                  >
+                    <BiDotsVerticalRounded className="menu" />
+                  </Button>
+                </Popover>
+              </FlexibleDiv>
+            ))
+          ) : (
+            <FlexibleDiv height="200px">
+              <Typography.Title level={2}>No Data</Typography.Title>
             </FlexibleDiv>
-          ))}
+          )}
         </FlexibleDiv>
       </TableDrawer>
 

@@ -22,22 +22,26 @@ const CustomTable = ({
   const [query, setQuery] = useState(`page=1&perPage=${defaultPageSize || 10}`);
   const [pageSize, setPageSize] = useState(defaultPageSize || 10);
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     setIsLoading(true);
-  //     try {
-  //       const { data, total, current } = await func(query);
-  //       setPagination((p) => ({ ...p, total, current, pageSize }));
-  //       setTableData(data);
-  //       setIsLoading(false);
-  //     } catch (e) {
-  //       console.log(e);
-  //       setIsLoading(false);
-  //     }
-  //   }
+  useEffect(() => {
+    async function fetchData() {
+      setIsLoading(true);
+      try {
+        const { data, total, current } = await func(query);
+        setPagination((p) => ({ ...p, total, current, pageSize }));
+        setTableData(data);
+        setIsLoading(false);
+      } catch (e) {
+        console.log(e);
+        setIsLoading(false);
+      }
+    }
 
-  //   (!formIsLoading || !!formIsLoading) && fetchData();
-  // }, [query, setIsLoading, func, pageSize, formIsLoading, setTotal]);
+    fetchData();
+
+    return () => {
+      fetchData();
+    };
+  }, [query, setIsLoading, func, pageSize]);
 
   function handleTabChange(pagination) {
     const { current, pageSize } = pagination;
@@ -52,6 +56,8 @@ const CustomTable = ({
       }
     },
   };
+
+  console.log(tableData);
 
   return (
     <TableStyles>

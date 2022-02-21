@@ -16,7 +16,8 @@ export default styled(Button)`
   @media (max-width: 350px) {
     height: ${({ height }) => height === "68px" && "50px"};
   }
-  :focus {
+  :focus,
+  :active {
     background: ${({ background }) => background || "#9342f6"};
   }
 

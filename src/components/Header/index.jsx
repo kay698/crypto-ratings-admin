@@ -4,9 +4,15 @@ import { FlexibleDiv } from "../Box/styles";
 import { HeaderStyles } from "./styles";
 import Logo from "../../assets/svgs/logo-white.svg";
 import { AiOutlineLogout, AiOutlineMenu } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 const DashboardHeader = ({ setShowMobileSideBar, showMobileSideBar }) => {
   const { Header } = Layout;
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    sessionStorage.removeItem("admin_token");
+    navigate("/login");
+  };
 
   return (
     <HeaderStyles>
@@ -18,7 +24,7 @@ const DashboardHeader = ({ setShowMobileSideBar, showMobileSideBar }) => {
         >
           <img src={Logo} alt="" />
 
-          <span>
+          <span onClick={handleLogout}>
             Log Out <AiOutlineLogout />
           </span>
           <AiOutlineMenu
