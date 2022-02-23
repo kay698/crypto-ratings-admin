@@ -1,23 +1,24 @@
-import React, { useState } from "react";
-import DashboardLayout from "../../../components/Layout";
-import Input from "../../../components/TextField";
-import { FlexibleDiv } from "../../../components/Box/styles";
-import { Typography, Popover } from "antd";
-import Button from "../../../components/Button";
-import CustomTable from "../../../components/Table";
-import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi";
-import { TableDrawer } from "../../../components/Drawer";
-import { CustomersStyles } from "./styles";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FiEdit } from "react-icons/fi";
-import Phone from "../../../assets/svgs/call.svg";
-import Mail from "../../../assets/svgs/sms.svg";
-import Trash from "../../../assets/svgs/trash.svg";
+import React, { useState } from "react"
+import DashboardLayout from "../../../components/Layout"
+import Input from "../../../components/TextField"
+import { FlexibleDiv } from "../../../components/Box/styles"
+import { Typography, Popover } from "antd"
+import Button from "../../../components/Button"
+import CustomTable from "../../../components/Table"
+import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi"
+import { TableDrawer } from "../../../components/Drawer"
+import { CustomersStyles } from "./styles"
+import { RiDeleteBin6Line } from "react-icons/ri"
+import { FiEdit } from "react-icons/fi"
+import Phone from "../../../assets/svgs/call.svg"
+import Mail from "../../../assets/svgs/sms.svg"
+import Trash from "../../../assets/svgs/trash.svg"
+import { getAllUsers } from "../../../network/users"
 
 function Customers() {
-  const [searching, setSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState();
-  const [showDrawer, setShowDrawer] = useState(false);
+  const [searching, setSearching] = useState(false)
+  const [searchResults, setSearchResults] = useState()
+  const [showDrawer, setShowDrawer] = useState(false)
 
   const columns = [
     {
@@ -71,7 +72,7 @@ function Customers() {
         />
       ),
     },
-  ];
+  ]
 
   // const handleSearch = async (value) => {
   //   if (value.searchResults === "") {
@@ -103,7 +104,7 @@ function Customers() {
         Delete
       </p>
     </>
-  );
+  )
   return (
     <DashboardLayout>
       <CustomersStyles>
@@ -130,7 +131,7 @@ function Customers() {
             </FlexibleDiv>
           </FlexibleDiv>
           <CustomTable
-            func=""
+            func={getAllUsers}
             columns={columns}
             searchResults={searchResults}
           />
@@ -169,7 +170,7 @@ function Customers() {
         </FlexibleDiv>
       </TableDrawer>
     </DashboardLayout>
-  );
+  )
 }
 
-export default Customers;
+export default Customers

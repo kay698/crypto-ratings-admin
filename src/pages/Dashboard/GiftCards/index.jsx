@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import DashboardLayout from "../../../components/Layout";
-import Input from "../../../components/TextField";
-import { FlexibleDiv } from "../../../components/Box/styles";
-import { Typography, Popover, Form, notification } from "antd";
-import Button from "../../../components/Button";
-import CustomTable from "../../../components/Table";
-import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi";
-import { TableDrawer } from "../../../components/Drawer";
-import { GiftcardStyles } from "./styles";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FiEdit } from "react-icons/fi";
-import { ModalWrapper } from "../../../components/ModalStylesWrap";
-import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
-import Select from "../../../components/Select";
-import { giftCards, currencies } from "../../../utils/dataHelpers/selectData";
+import React, { useState } from "react"
+import DashboardLayout from "../../../components/Layout"
+import Input from "../../../components/TextField"
+import { FlexibleDiv } from "../../../components/Box/styles"
+import { Typography, Popover, Form, notification } from "antd"
+import Button from "../../../components/Button"
+import CustomTable from "../../../components/Table"
+import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi"
+import { TableDrawer } from "../../../components/Drawer"
+import { GiftcardStyles } from "./styles"
+import { RiDeleteBin6Line } from "react-icons/ri"
+import { FiEdit } from "react-icons/fi"
+import { ModalWrapper } from "../../../components/ModalStylesWrap"
+import { SmileOutlined, LoadingOutlined } from "@ant-design/icons"
+import Select from "../../../components/Select"
+import { giftCards, currencies } from "../../../utils/dataHelpers/selectData"
 import {
   addGiftCard,
   updateGiftCard,
@@ -23,110 +23,110 @@ import {
   deleteGiftCardCategory,
   addGiftCardCategory,
   getAllGiftCardCategories,
-} from "../../../network/giftcards";
+} from "../../../network/giftcards"
 
 function Giftcard() {
-  const [searching, setSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState();
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [form] = Form.useForm();
-  const [isLoading, setIsLoading] = useState(false);
-  const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
-  const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false);
-  const [giftardsList, setGiftCardsList] = useState([]);
+  const [searching, setSearching] = useState(false)
+  const [searchResults, setSearchResults] = useState()
+  const [showDrawer, setShowDrawer] = useState(false)
+  const [form] = Form.useForm()
+  const [isLoading, setIsLoading] = useState(false)
+  const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false)
+  const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false)
+  const [giftardsList, setGiftCardsList] = useState([])
 
-  const [card, setCard] = useState();
-  const [currency, setCurrency] = useState();
+  const [card, setCard] = useState()
+  const [currency, setCurrency] = useState()
 
-  const { Option } = Select;
+  const { Option } = Select
 
   const handleCardCategory = (value) => {
-    setCard(value);
-  };
+    setCard(value)
+  }
   const handleCurrencyCategory = (value) => {
-    setCurrency(value);
-  };
+    setCurrency(value)
+  }
 
   const handleGetAllGiftCards = async () => {
-    setShowDrawer(true);
+    setShowDrawer(true)
     const payload = {
       page: "1",
       perPage: "1000",
-    };
-    try {
-      const data = await getAllGiftCards(payload);
-      console.log(data);
-      setGiftCardsList(data);
-    } catch (e) {
-      console.log(e);
     }
-  };
+    try {
+      const data = await getAllGiftCards(payload)
+      console.log(data)
+      setGiftCardsList(data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
   // create card category
   async function handleCreateCategory(values) {
-    setIsLoading(true);
+    setIsLoading(true)
     const payload = {
       ...values,
-    };
+    }
     try {
-      const data = await addGiftCardCategory(payload);
-      setShowCreateCategoryModal(false);
+      const data = await addGiftCardCategory(payload)
+      setShowCreateCategoryModal(false)
       notification.open({
         message: "Success",
         description: "Catrgory added",
         icon: <SmileOutlined style={{ color: "green" }} />,
-      });
-      setIsLoading(false);
+      })
+      setIsLoading(false)
     } catch (error) {
       if (error.response) {
         notification.open({
           message: "Error",
           description: error.response.data.message,
           icon: <SmileOutlined style={{ color: "red" }} />,
-        });
-        setIsLoading(false);
+        })
+        setIsLoading(false)
       } else {
         notification.open({
           message: "Error",
           description:
             "There was an issue with your network. Pls try again later",
           icon: <SmileOutlined style={{ color: "red" }} />,
-        });
-        setIsLoading(false);
+        })
+        setIsLoading(false)
       }
     }
   }
   const closeDrawer = () => {
-    setShowDrawer(false);
-    window.location.replace("/");
-  };
+    setShowDrawer(false)
+    window.location.replace("/")
+  }
 
   // add gift card
   async function handleFormSubmit(values) {
-    setIsLoading(true);
+    setIsLoading(true)
     const payload = {
       ...values,
       giftCardCategoryId: card,
       currency: currency,
-    };
+    }
     try {
-      const data = await addGiftCard(payload);
-      setIsLoading(false);
+      const data = await addGiftCard(payload)
+      setIsLoading(false)
     } catch (error) {
       if (error.response) {
         notification.open({
           message: "Error",
           description: error.response.data.message,
           icon: <SmileOutlined style={{ color: "red" }} />,
-        });
-        setIsLoading(false);
+        })
+        setIsLoading(false)
       } else {
         notification.open({
           message: "Error",
           description:
             "There was an issue with your network. Pls try again later",
           icon: <SmileOutlined style={{ color: "red" }} />,
-        });
-        setIsLoading(false);
+        })
+        setIsLoading(false)
       }
     }
   }
@@ -154,7 +154,7 @@ function Giftcard() {
         />
       ),
     },
-  ];
+  ]
 
   // const handleSearch = async (value) => {
   //   if (value.searchResults === "") {
@@ -186,7 +186,7 @@ function Giftcard() {
         Delete
       </p>
     </>
-  );
+  )
   return (
     <DashboardLayout>
       <GiftcardStyles>
@@ -399,7 +399,7 @@ function Giftcard() {
         </FlexibleDiv>
       </ModalWrapper>
     </DashboardLayout>
-  );
+  )
 }
 
-export default Giftcard;
+export default Giftcard

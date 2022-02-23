@@ -19,16 +19,18 @@ function Crypto() {
   const [searchResults, setSearchResults] = useState()
   const [showDrawer, setShowDrawer] = useState(true)
   const [showAddNewCrypto, setShowAddNewCrypto] = useState(false)
+  const [showDeleteCrypto, setShowDeleteCrypto] = useState(false)
+  const [showEditCrypto, setShowEditCrypto] = useState(false)
   const [form] = Form.useForm()
   const [isLoading, setIsLoading] = useState(false)
 
   const content = (
     <>
-      <p style={{ opacity: ".5" }}>
+      <p style={{ opacity: ".5" }} onClick={() => setShowEditCrypto(true)}>
         <FiEdit style={{ margin: "0 5px -2px 0" }} />
         Edit
       </p>
-      <p style={{ color: "red" }}>
+      <p style={{ color: "red" }} onClick={() => setShowDeleteCrypto(true)}>
         <RiDeleteBin6Line style={{ margin: "0 5px -2px 0" }} />
         Delete
       </p>
