@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
-import { TableStyles } from "./styles";
-import { Table } from "antd";
-import { OverFlowScrollBar } from "../OverflowScroll/styles";
+import React, { useState, useEffect, useContext } from "react"
+import { TableStyles } from "./styles"
+import { Table } from "antd"
+import { OverFlowScrollBar } from "../OverflowScroll/styles"
+import { parseResponseToArray } from "../../lib/parseResponse"
 
 const CustomTable = ({
   columns,
@@ -12,52 +13,52 @@ const CustomTable = ({
   addBusinnessId,
   searchResults,
 }) => {
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState([])
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: defaultPageSize || 10,
     total: 0,
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [query, setQuery] = useState(`page=1&perPage=${defaultPageSize || 10}`);
-  const [pageSize, setPageSize] = useState(defaultPageSize || 10);
+  })
+  const [isLoading, setIsLoading] = useState(false)
+  const [query, setQuery] = useState(`page=1&perPage=${defaultPageSize || 10}`)
+  const [pageSize, setPageSize] = useState(defaultPageSize || 10)
 
   useEffect(() => {
     async function fetchData() {
-      setIsLoading(true);
+      setIsLoading(true)
       try {
-        const { data, total, current } = await func(query);
-        setPagination((p) => ({ ...p, total, current, pageSize }));
-        setTableData(data);
-        setIsLoading(false);
+        const { data, total, current } = await func(query)
+        setPagination((p) => ({ ...p, total, current, pageSize }))
+        setTableData(parseResponseToArray(data))
+        setIsLoading(false)
       } catch (e) {
-        console.log(e);
-        setIsLoading(false);
+        console.log(e)
+        setIsLoading(false)
       }
     }
 
-    fetchData();
+    fetchData()
 
     return () => {
-      fetchData();
-    };
-  }, [query, setIsLoading, func, pageSize]);
+      fetchData()
+    }
+  }, [query, setIsLoading, func, pageSize])
 
   function handleTabChange(pagination) {
-    const { current, pageSize } = pagination;
-    setQuery(`page=${current}&perPage=${pageSize}`);
-    setPageSize(pageSize);
+    const { current, pageSize } = pagination
+    setQuery(`page=${current}&perPage=${pageSize}`)
+    setPageSize(pageSize)
   }
 
   const rowSelection = {
     onChange: (_, selectedRows) => {
       if (setSelectedData) {
-        setSelectedData(selectedRows);
+        setSelectedData(selectedRows)
       }
     },
-  };
+  }
 
-  console.log(tableData);
+  console.log(tableData, "table data")
 
   return (
     <TableStyles>
@@ -75,7 +76,7 @@ const CustomTable = ({
         />
       </OverFlowScrollBar>
     </TableStyles>
-  );
-};
+  )
+}
 
-export default CustomTable;
+export default CustomTable
