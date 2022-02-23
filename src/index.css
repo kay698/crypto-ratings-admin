@@ -1,13 +1,186 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* @font-face {
+  font-family: "KlikBold";
+  src: local("KlikBold"), local("Klik-Bold"),
+    url("./components/KlikFont/Klik-Bold.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@font-face {
+  font-family: "KlikRegular";
+  src: local("KlikRegular"), local("Klik-Regular"),
+    url("./components/KlikFont/Klik-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "KlikLight";
+  src: local("KlikLight"), local("Klik-Light"),
+    url("./components/KlikFont/Klik-Light.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "KlikMedium";
+  src: local("KlikMedium"), local("Klik-Medium"),
+    url("./components/KlikFont/Klik-Medium.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+} */
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scrollbar-color: #e3e3e3 transparent;
+  scrollbar-width: thin;
+  -webkit-text-size-adjust: 100%;
+}
+* {
+  font-variant-numeric: normal;
+  letter-spacing: 0.4px;
+}
+/* p,
+span,
+small,
+input,
+strong,
+h3,
+h5,
+h4,
+div,
+svg,
+a {
+  font-family: "KlikRegular" !important;
+}
+h2,
+h1 {
+  font-family: "KlikBold" !important;
+  font-weight: 700;
+} */
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 50px;
+  background: #bbb;
+}
+::-webkit-scrollbar-thumb:active {
+  background: #5352ec;
+}
+::-webkit-scrollbar-track {
+  background: #eeeeee;
+  border-radius: 53px;
+}
+::-webkit-scrollbar-track:hover {
+  background: #eff0f5;
+}
+::-webkit-scrollbar-track:active {
+  background: #eeeeee;
+}
+::-webkit-scrollbar-corner {
+  background: #e3e3e3;
+}
+* {
+  margin: 0;
+  padding: 0;
+  /* font-family: "Klik"; */
+  text-decoration: none;
+  list-style-type: none;
+}
+
+.floatingLogo {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+.ant-select-dropdown-hidden:first-child,
+.ant-select-dropdown:first-child {
+  max-height: 300px !important;
+  overflow: auto !important;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+@media (max-width: 500px) {
+  .ant-modal-body {
+    padding: 24px 15px !important;
+  }
+}
+@media (min-width: 500px) {
+  .ant-modal-content {
+    margin-left: 7%;
+  }
+}
+
+@media (max-width: 500px) and (min-width: 400px) {
+  .ant-modal-content {
+    margin-left: 2%;
+  }
+}
+
+.ant-form-item-explain-error {
+  margin: 5px 0;
+  font-size: 10px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s !important;
+}
+
+.ant-select-item-option-content {
+  padding: 10px 0 0 0 !important ;
+}
+
+h1 {
+  font-size: 50px !important;
+  color: #050bac !important;
+}
+@media (max-width: 1000px) {
+  h1 {
+    font-size: 40px !important;
+  }
+}
+
+@media (max-width: 800px) {
+  h1 {
+    font-size: 30px !important;
+  }
+}
+.ant-popover-inner {
+  border-radius: 10px !important;
+}
+.ant-select-dropdown-hidden:first-child,
+.ant-select-dropdown:first-child {
+  max-height: 300px !important;
+  overflow: auto !important;
 }

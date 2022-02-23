@@ -1,23 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Giftcard from "./pages/Dashboard/GiftCards";
+import Crypto from "./pages/Dashboard/Crypto";
+import Customers from "./pages/Dashboard/Cusomers";
+import ScrollToTop from "./components/ScrollManager";
+import "antd/dist/antd.css";
+import Login from "./pages/Auth/login";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <BrowserRouter>
+        <ScrollToTop>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/crypto" element={<Crypto />} />
+            <Route path="/customers" element={<Customers />} />
+            <Route path="/" element={<Giftcard />} />
+          </Routes>
+        </ScrollToTop>
+      </BrowserRouter>
     </div>
   );
 }
