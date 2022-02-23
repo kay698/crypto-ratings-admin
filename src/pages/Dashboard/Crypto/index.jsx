@@ -10,7 +10,12 @@ import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi";
 import { CryptoStyles } from "./styles";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiEdit } from "react-icons/fi";
-import { addCrypto, getAllCrypto, updateCrypto } from "../../../network/crypto";
+import {
+  addCrypto,
+  deleteCrypto,
+  getAllCrypto,
+  updateCrypto,
+} from "../../../network/crypto";
 import { ModalWrapper } from "../../../components/ModalStylesWrap";
 import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
 import { currencies } from "../../../utils/dataHelpers/selectData";
@@ -18,7 +23,6 @@ import { currencies } from "../../../utils/dataHelpers/selectData";
 function Crypto() {
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState();
-  const [showDrawer, setShowDrawer] = useState(true);
   const [showAddNewCrypto, setShowAddNewCrypto] = useState(false);
   const [showDeleteCrypto, setShowDeleteCrypto] = useState(false);
   const [showEditCrypto, setShowEditCrypto] = useState(false);
@@ -40,6 +44,11 @@ function Crypto() {
     setCurrency(val.currency);
     setCryptoId(val._id);
     setShowEditCrypto(true);
+  };
+
+  const handleShowDelete = (val) => {
+    setShowDeleteCrypto(true);
+    setCryptoId(val._id);
   };
 
   const columns = [
@@ -66,7 +75,6 @@ function Crypto() {
       render: (id, user) => (
         <Popover
           placement="bottomLeft"
-          // title={text}
           content={
             <>
               <p
@@ -78,7 +86,7 @@ function Crypto() {
               </p>
               <p
                 style={{ color: "red", cursor: "pointer" }}
-                onClick={() => setShowDeleteCrypto(true)}
+                onClick={() => handleShowDelete(user)}
               >
                 <RiDeleteBin6Line style={{ margin: "0 5px -2px 0" }} />
                 Delete
@@ -175,6 +183,39 @@ function Crypto() {
       }
     }
   }
+
+  // create delete crypto
+  async function handleDeleteCrypto() {
+    setIsLoading(true);
+    try {
+      await deleteCrypto({ cryptoId: cryptoId });
+      notification.open({
+        message: "Success",
+        description: "Crypto deleted",
+        icon: <SmileOutlined style={{ color: "green" }} />,
+      });
+      setShowDeleteCrypto(false);
+      window.location.reload();
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
   // const handleSearch = async (value) => {
   //   if (value.searchResults === "") {
   //     return;
@@ -230,7 +271,7 @@ function Crypto() {
           />
         </FlexibleDiv>
       </CryptoStyles>
-
+      {/* Add crypto */}
       <ModalWrapper
         visible={showAddNewCrypto}
         footer={null}
@@ -308,6 +349,7 @@ function Crypto() {
         </FlexibleDiv>
       </ModalWrapper>
 
+      {/* edit crypto */}
       <ModalWrapper
         visible={showEditCrypto}
         footer={null}
@@ -382,6 +424,30 @@ function Crypto() {
               </Button>
             </Form>
           </FlexibleDiv>
+        </FlexibleDiv>
+      </ModalWrapper>
+
+      {/* delete crypto */}
+      <ModalWrapper
+        visible={showDeleteCrypto}
+        footer={null}
+        closable={true}
+        onCancel={() => setShowDeleteCrypto(false)}
+      >
+        <FlexibleDiv flexDir="column" height="250px">
+          <Typography.Title level={5}>
+            Are you sure you want to delete this crypto
+          </Typography.Title>
+          <Button
+            type="primary"
+            htmlType="submit"
+            width="200px"
+            height="45px"
+            loading={isLoading}
+            onClick={handleDeleteCrypto}
+          >
+            Delete
+          </Button>
         </FlexibleDiv>
       </ModalWrapper>
     </DashboardLayout>

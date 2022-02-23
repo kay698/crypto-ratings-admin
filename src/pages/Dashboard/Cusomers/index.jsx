@@ -1,65 +1,92 @@
-import React, { useState } from "react"
-import DashboardLayout from "../../../components/Layout"
-import Input from "../../../components/TextField"
-import { FlexibleDiv } from "../../../components/Box/styles"
-import { Typography, Popover } from "antd"
-import Button from "../../../components/Button"
-import CustomTable from "../../../components/Table"
-import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi"
-import { TableDrawer } from "../../../components/Drawer"
-import { CustomersStyles } from "./styles"
-import { RiDeleteBin6Line } from "react-icons/ri"
-import { FiEdit } from "react-icons/fi"
-import Phone from "../../../assets/svgs/call.svg"
-import Mail from "../../../assets/svgs/sms.svg"
-import Trash from "../../../assets/svgs/trash.svg"
-import { getAllUsers } from "../../../network/users"
+import React, { useState } from "react";
+import DashboardLayout from "../../../components/Layout";
+import Input from "../../../components/TextField";
+import { FlexibleDiv } from "../../../components/Box/styles";
+import Button from "../../../components/Button";
+import CustomTable from "../../../components/Table";
+import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi";
+import { TableDrawer } from "../../../components/Drawer";
+import { CustomersStyles } from "./styles";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { FiEdit } from "react-icons/fi";
+import Phone from "../../../assets/svgs/call.svg";
+import Mail from "../../../assets/svgs/sms.svg";
+import Trash from "../../../assets/svgs/trash.svg";
+import { getAllUsers } from "../../../network/users";
+import { Typography, Popover, notification, Form } from "antd";
+import { deleteUser, updateUser } from "../../../network/users";
+import { ModalWrapper } from "../../../components/ModalStylesWrap";
+import { SmileOutlined } from "@ant-design/icons";
 
 function Customers() {
-  const [searching, setSearching] = useState(false)
-  const [searchResults, setSearchResults] = useState()
-  const [showDrawer, setShowDrawer] = useState(false)
+  const [searching, setSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState();
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [customerData, setCustomerData] = useState("");
+  const [showDeleteCustomer, setShowDeleteCustomer] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showEditCustomer, setshowEditCustomer] = useState(false);
+
+  const [editForm] = Form.useForm();
+
+  const handleShowEdit = (val) => {
+    editForm.setFieldsValue({
+      email: customerData?.email,
+      phoneNumber: customerData?.phoneNumber,
+      password: customerData?.password,
+    });
+    setshowEditCustomer(true);
+  };
+
+  const handleShowDelete = (val) => {
+    setShowDeleteCustomer(true);
+  };
+
+  const handleShowDrawer = (val) => {
+    setShowDrawer(true);
+    setCustomerData(val);
+  };
 
   const columns = [
     {
       title: "SN",
       dataIndex: "sn",
       key: "sn",
-      render: (user) => user.category,
+      render: (id, user) => console.log(id, user),
     },
 
     {
       title: "Email address",
       dataIndex: "email",
       key: "email",
-      render: (user) => user.email,
+      render: (id, user) => user.email,
     },
     {
       title: "Phone number",
       dataIndex: "phone",
       key: "phone",
-      render: (user) => user.emal,
+      render: (id, user) => user.phoneNumber,
     },
-    {
-      title: "Last active",
-      dataIndex: "active",
-      key: "active",
-      render: (user) =>
-        user.active === "Active" ? (
-          <p
-            style={{
-              padding: "5px",
-              borderRadius: "10px",
-              background: "#27AE601A",
-              color: "#27AE60",
-            }}
-          >
-            {user.active}
-          </p>
-        ) : (
-          user.active
-        ),
-    },
+    // {
+    //   title: "Last active",
+    //   dataIndex: "active",
+    //   key: "active",
+    //   render: (user) =>
+    //     user.active === "Active" ? (
+    //       <p
+    //         style={{
+    //           padding: "5px",
+    //           borderRadius: "10px",
+    //           background: "#27AE601A",
+    //           color: "#27AE60",
+    //         }}
+    //       >
+    //         {user.active}
+    //       </p>
+    //     ) : (
+    //       user.active
+    //     ),
+    // },
 
     {
       title: "",
@@ -68,11 +95,11 @@ function Customers() {
       render: (id, user) => (
         <BiDotsVerticalRounded
           className="menu"
-          onClick={() => setShowDrawer(true)}
+          onClick={() => handleShowDrawer(user)}
         />
       ),
     },
-  ]
+  ];
 
   // const handleSearch = async (value) => {
   //   if (value.searchResults === "") {
@@ -92,28 +119,92 @@ function Customers() {
   //     console.log(e);
   //   }
   // };
+  const closeDrawer = () => {
+    setShowDrawer(false);
+    window.location.reload();
+  };
 
-  const content = (
-    <>
-      <p style={{ opacity: ".5" }}>
-        <FiEdit style={{ margin: "0 5px -2px 0" }} />
-        Edit
-      </p>
-      <p style={{ color: "red" }}>
-        <RiDeleteBin6Line style={{ margin: "0 5px -2px 0" }} />
-        Delete
-      </p>
-    </>
-  )
+  async function handledeleteUser() {
+    setIsLoading(true);
+    try {
+      await deleteUser({ userId: customerData._id });
+      notification.open({
+        message: "Success",
+        description: "Crypto deleted",
+        icon: <SmileOutlined style={{ color: "green" }} />,
+      });
+      setShowDeleteCustomer(false);
+      window.location.reload();
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
+
+  // edit crypto
+  async function handleEditCustomer(values) {
+    setIsLoading(true);
+    const payload = {
+      ...values,
+      userId: customerData._id,
+    };
+    try {
+      const data = await updateUser(payload);
+      notification.open({
+        message: "Success",
+        description: "Crypto updated",
+        icon: <SmileOutlined style={{ color: "green" }} />,
+      });
+      setshowEditCustomer(false);
+      window.location.reload();
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
   return (
     <DashboardLayout>
       <CustomersStyles>
         <FlexibleDiv>
-          <FlexibleDiv justifyContent="space-between" className="header_wrap">
+          <FlexibleDiv
+            justifyContent="space-between"
+            className="header_wrap"
+            flexWrap="nowrap"
+          >
             <Typography.Title level={2}>Customers</Typography.Title>
             <FlexibleDiv
               width="80%"
-              justifyContent="space-between"
+              justifyContent="flex-end"
               className="search_wrap"
               flexWrap="nowrap"
             >
@@ -125,9 +216,6 @@ function Customers() {
                 radius="8px"
                 prefix={<BiSearch />}
               />
-              <Button height="50px" boxShadow="none">
-                + Add New Category
-              </Button>
             </FlexibleDiv>
           </FlexibleDiv>
           <CustomTable
@@ -137,23 +225,47 @@ function Customers() {
           />
         </FlexibleDiv>
       </CustomersStyles>
-      <TableDrawer visible={showDrawer} setDrawer={setShowDrawer}>
+      <TableDrawer
+        visible={showDrawer}
+        setDrawer={setShowDrawer}
+        closeDrawer={closeDrawer}
+      >
         <FlexibleDiv justifyContent="space-between">
           <Typography.Title level={4}>Customer Contact Info</Typography.Title>
-          <Button height="50px" boxShadow="none" background="red" hover="red">
-            <img src={Trash} alt="" />
-            Delete Customers
-          </Button>
+          <FlexibleDiv width="120px" justifyContent="space-between">
+            <Button
+              height="50px"
+              boxShadow="none"
+              background="#e0e0e0"
+              hover="#e0e0e0"
+              width="50px"
+              onClick={handleShowEdit}
+            >
+              <FiEdit style={{ fontSize: "20px" }} />
+            </Button>
+            <Button
+              height="50px"
+              boxShadow="none"
+              background="red"
+              hover="red"
+              width="max-content"
+              onClick={handleShowDelete}
+            >
+              <img src={Trash} alt="" />
+            </Button>
+          </FlexibleDiv>
         </FlexibleDiv>
         <FlexibleDiv flexDir="column" margin="20px 0 0 0">
           <FlexibleDiv justifyContent="flex-start">
             <img src={Mail} alt="" />
-            <Typography.Title level={5}>gianalubin@gmail.com</Typography.Title>
+            <Typography.Title level={5}>{customerData?.email}</Typography.Title>
             <span className="copy">Copy email</span>
           </FlexibleDiv>
           <FlexibleDiv justifyContent="flex-start" margin="20px 0">
             <img src={Phone} alt="" />
-            <Typography.Title level={5}>(702) 555-0122</Typography.Title>
+            <Typography.Title level={5}>
+              {customerData?.phoneNumber}
+            </Typography.Title>
             <span className="copy">Copy phone</span>
           </FlexibleDiv>
 
@@ -169,8 +281,106 @@ function Customers() {
           </FlexibleDiv>
         </FlexibleDiv>
       </TableDrawer>
+
+      {/* delete crypto */}
+      <ModalWrapper
+        visible={showDeleteCustomer}
+        footer={null}
+        closable={true}
+        onCancel={() => setShowDeleteCustomer(false)}
+      >
+        <FlexibleDiv flexDir="column" height="250px">
+          <Typography.Title level={5}>
+            Are you sure you want to delete this user
+          </Typography.Title>
+          <Button
+            type="primary"
+            htmlType="submit"
+            width="200px"
+            height="45px"
+            loading={isLoading}
+            onClick={handledeleteUser}
+          >
+            Delete
+          </Button>
+        </FlexibleDiv>
+      </ModalWrapper>
+
+      {/* edit user */}
+      <ModalWrapper
+        visible={showEditCustomer}
+        footer={null}
+        closable={true}
+        onCancel={() => setshowEditCustomer(false)}
+      >
+        <FlexibleDiv flexDir="column">
+          <Typography.Title level={5}>Edit Customer</Typography.Title>
+          <FlexibleDiv margin="30px 0">
+            <Form
+              form={editForm}
+              onFinish={handleEditCustomer}
+              style={{ width: "100%" }}
+            >
+              <Form.Item
+                name="email"
+                rules={[
+                  {
+                    required: true,
+                    message: "This field is required",
+                  },
+                ]}
+              >
+                <Input placeholder="Email" background="#F5FCFF" height="50px" />
+              </Form.Item>
+              {customerData?.accountType === "ADMIN" && (
+                <Form.Item
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "This field is required",
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder="Password"
+                    background="#F5FCFF"
+                    height="50px"
+                  />
+                </Form.Item>
+              )}
+
+              <Form.Item
+                rules={[
+                  {
+                    required: true,
+                    message: "This field is required",
+                  },
+                ]}
+                name="phoneNumber"
+              >
+                <Input
+                  placeholder="Phone Number"
+                  background="#F5FCFF"
+                  height="50px"
+                  type="number"
+                />
+              </Form.Item>
+
+              <Button
+                type="primary"
+                htmlType="submit"
+                width="100%"
+                loading={isLoading}
+              >
+                Save
+              </Button>
+            </Form>
+          </FlexibleDiv>
+        </FlexibleDiv>
+      </ModalWrapper>
     </DashboardLayout>
-  )
+  );
 }
 
-export default Customers
+export default Customers;

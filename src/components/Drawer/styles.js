@@ -50,4 +50,9 @@ export const TableDrawerStyles = styled(Drawer)`
   h4 {
     color: #333333;
   }
+  @media (max-width: 800px) {
+    .ant-drawer-content-wrapper {
+      width: 90% !important;
+    }
+  }
 `;

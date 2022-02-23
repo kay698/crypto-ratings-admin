@@ -23,6 +23,8 @@ export const getSingleCrypto = async function (cryptoId) {
 };
 
 export const deleteCrypto = async function (payload) {
-  const { data } = await instance.delete(`/crypto/delete`, payload);
+  const { data } = await instance.delete(`/crypto/delete`, {
+    data: payload,
+  });
   return data;
 };
