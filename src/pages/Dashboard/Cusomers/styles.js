@@ -7,14 +7,14 @@ export const CustomersStyles = styled.div`
     width: max-content;
   }
   .header_wrap {
-    input {
-      margin-right: 10px;
-    }
-    @media (max-width: 950px) {
+    @media (max-width: 800px) {
       flex-direction: column;
       align-items: flex-start;
       .search_wrap {
         width: 100%;
+        .ant-input-affix-wrapper {
+          width: 100% !important;
+        }
       }
     }
   }

@@ -19,4 +19,7 @@ export const ModalWrapper = styled(Modal)`
     font-weight: 500;
     color: #333333;
   }
+  h5 {
+    text-align: center;
+  }
 `;

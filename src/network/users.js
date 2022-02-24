@@ -1,24 +1,7 @@
 import instance from "./axios";
 
 const getAllUsers = async function (query) {
-  const data = await instance.get("/customers?" + query);
-
-  return data;
-};
-const getAllAgents = async function () {
-  const { data } = await instance.get("/users/agents");
-
-  return data;
-};
-
-const getUsersOnWhatsapp = async function (query) {
-  const { data } = await instance.get("/users/on-whatsapp?" + query);
-
-  return data;
-};
-
-const getUsersOnMessenger = async function (query) {
-  const { data } = await instance.get("/users/on-messenger?" + query);
+  const data = await instance.get("/users?" + query);
 
   return data;
 };
@@ -28,11 +11,15 @@ const searchUsers = async function (query) {
 
   return data;
 };
-
-export {
-  getAllUsers,
-  getAllAgents,
-  getUsersOnWhatsapp,
-  getUsersOnMessenger,
-  searchUsers,
+const deleteUser = async function (payload) {
+  const { data } = await instance.delete(`/users/delete`, {
+    data: payload,
+  });
+  return data;
 };
+const updateUser = async function (payload) {
+  const { data } = await instance.put(`/users/update`, payload);
+  return data;
+};
+
+export { getAllUsers, searchUsers, deleteUser, updateUser };

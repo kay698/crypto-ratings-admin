@@ -31,6 +31,14 @@ export const TableDrawerStyles = styled(Drawer)`
     color: #2f80ed;
     font-size: 12px;
   }
+  .copied {
+    padding: 5px 15px;
+    background: rgba(47, 128, 237, 0.3);
+    border-radius: 20px;
+    color: #2f80ed;
+    font-size: 12px;
+    font-weight: bold;
+  }
   .lastActive {
     padding: 15px 0;
     border-top: 1px solid #e0e0e0;
@@ -49,5 +57,19 @@ export const TableDrawerStyles = styled(Drawer)`
   p,
   h4 {
     color: #333333;
+  }
+  @media (max-width: 800px) {
+    .ant-drawer-content-wrapper {
+      width: 90% !important;
+    }
+    button {
+      height: 40px !important;
+      width: max-content;
+
+      span,
+      svg {
+        font-size: 15px;
+      }
+    }
   }
 `;
