@@ -9,8 +9,8 @@ export const addGiftCardCategory = async function (payload) {
   return data;
 };
 
-export const updateGiftCard = async function (payload, productId) {
-  const { data } = await instance.put(`/products/${productId}`, payload);
+export const updateGiftCard = async function (payload) {
+  const { data } = await instance.put(`/gift-cards/update`, payload);
   return data;
 };
 
@@ -38,7 +38,9 @@ export const getSingleGiftCard = async function (productId) {
 };
 
 export const deleteGiftCard = async function (payload) {
-  const { data } = await instance.delete(`/gift-cards/delete`, payload);
+  const { data } = await instance.delete(`/gift-cards/delete`, {
+    data: payload,
+  });
   return data;
 };
 

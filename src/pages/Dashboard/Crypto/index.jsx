@@ -18,7 +18,7 @@ import {
 } from "../../../network/crypto";
 import { ModalWrapper } from "../../../components/ModalStylesWrap";
 import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
-import { currencies } from "../../../utils/dataHelpers/selectData";
+import { currencies, getCurrncy } from "../../../utils/dataHelpers/selectData";
 
 function Crypto() {
   const [searching, setSearching] = useState(false);
@@ -53,19 +53,16 @@ function Crypto() {
 
   const columns = [
     {
-      title: "Title",
+      title: "Cryptocurrency",
       dataIndex: "title",
       key: "title",
     },
 
     {
-      title: "Amount",
+      title: "Rate",
       dataIndex: "amount",
-    },
-
-    {
-      title: "Currency",
-      dataIndex: "currency",
+      render: (id, crypto) =>
+        `NGN ${crypto?.amount}${getCurrncy(crypto?.currency)}`,
     },
 
     {
@@ -93,7 +90,7 @@ function Crypto() {
               </p>
             </>
           }
-          trigger="click"
+          trigger="hover"
         >
           <Button
             width="max-content"

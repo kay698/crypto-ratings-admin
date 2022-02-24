@@ -36,15 +36,20 @@ function Giftcard() {
   const [searchResults, setSearchResults] = useState();
   const [showDrawer, setShowDrawer] = useState(false);
   const [form] = Form.useForm();
-  const [editForm] = Form.useForm();
+  const [editCategoryForm] = Form.useForm();
+  const [editGiftcardForm] = Form.useForm();
+
   const [isLoading, setIsLoading] = useState(false);
   const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
   const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false);
   const [giftCardCategoryData, setgiftCardCategoryData] = useState();
+  const [cardId, setCardId] = useState();
   const [showDeleteGiftCardCategory, setShowDeleteGiftCardCategory] =
     useState(false);
+  const [showDeleteGiftCard, setShowDeleteGiftCard] = useState(false);
   const [showEditGiftCardCategory, setshowEditGiftCardCategory] =
     useState(false);
+  const [showEditGiftCard, setshowEditGiftCard] = useState(false);
   const [currency, setCurrency] = useState();
 
   const { Option } = Select;
@@ -53,14 +58,29 @@ function Giftcard() {
     setCurrency(value);
   };
 
-  const handleShowEdit = (val) => {
-    editForm.setFieldsValue({
+  const handleShowCategoryEdit = (val) => {
+    editCategoryForm.setFieldsValue({
       title: giftCardCategoryData?.title,
     });
     setshowEditGiftCardCategory(true);
   };
 
-  const handleShowDelete = () => {
+  const handleShowGiftcardEdit = (val) => {
+    editGiftcardForm.setFieldsValue({
+      title: val.title,
+      amount: val.amount,
+    });
+    setCurrency(val.currency);
+    setCardId(val._id);
+    setshowEditGiftCard(true);
+  };
+
+  const handleShowGiftcardDelete = (val) => {
+    setCardId(val._id);
+    setShowDeleteGiftCard(true);
+  };
+
+  const handleShowCategoryDelete = () => {
     setShowDeleteGiftCardCategory(true);
   };
 
@@ -131,12 +151,59 @@ function Giftcard() {
       categoryId: giftCardCategoryData._id,
       currency: currency,
     };
+
+    const getpayload = {
+      page: "1",
+      perPage: "1000",
+      giftCardCategoryId: giftCardCategoryData._id,
+    };
     try {
       const data = await addGiftCard(payload);
-      const { data: categoryData } = await getAllGiftCards(payload);
+      const { data: categoryData } = await getAllGiftCards(getpayload);
       setgiftCardCategoryData(categoryData);
       setIsLoading(false);
       setShowCreateGiftCardModal(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
+
+  // edit gift card
+  async function handleEditGiftCard(values) {
+    setIsLoading(true);
+    const payload = {
+      ...values,
+      categoryId: giftCardCategoryData._id,
+      currency: currency,
+      giftCardId: cardId,
+    };
+
+    const getpayload = {
+      page: "1",
+      perPage: "1000",
+      giftCardCategoryId: giftCardCategoryData._id,
+    };
+    try {
+      const data = await updateGiftCard(payload);
+      const { data: categoryData } = await getAllGiftCards(getpayload);
+      setgiftCardCategoryData(categoryData);
+      setshowEditGiftCard(false);
+      setIsLoading(false);
     } catch (error) {
       if (error.response) {
         notification.open({
@@ -208,6 +275,7 @@ function Giftcard() {
       await deleteGiftCardCategory({
         giftCardCategoryId: giftCardCategoryData._id,
       });
+
       notification.open({
         message: "Success",
         description: "Crypto deleted",
@@ -215,6 +283,47 @@ function Giftcard() {
       });
       setShowDeleteGiftCardCategory(false);
       window.location.reload();
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
+
+  // create delete giftcard
+  async function handleDeleteGiftcard() {
+    setIsLoading(true);
+    const getpayload = {
+      page: "1",
+      perPage: "1000",
+      giftCardCategoryId: giftCardCategoryData._id,
+    };
+    try {
+      await deleteGiftCard({
+        giftCardId: cardId,
+      });
+      const { data: categoryData } = await getAllGiftCards(getpayload);
+
+      notification.open({
+        message: "Success",
+        description: "Crypto deleted",
+        icon: <SmileOutlined style={{ color: "green" }} />,
+      });
+      setShowDeleteGiftCard(false);
       setIsLoading(false);
     } catch (error) {
       if (error.response) {
@@ -268,20 +377,19 @@ function Giftcard() {
     }
   }
 
-  const content = (
-    <>
-      <p style={{ opacity: ".5" }}>
-        <FiEdit style={{ margin: "0 5px -2px 0" }} />
-        Edit
-      </p>
-      <p style={{ color: "red" }}>
-        <RiDeleteBin6Line style={{ margin: "0 5px -2px 0" }} />
-        Delete
-      </p>
-    </>
-  );
+  // const content = (
+  //   <>
+  //     <p style={{ opacity: ".5" }}>
+  //       <FiEdit style={{ margin: "0 5px -2px 0" }} />
+  //       Edit
+  //     </p>
+  //     <p style={{ color: "red" }}>
+  //       <RiDeleteBin6Line style={{ margin: "0 5px -2px 0" }} />
+  //       Delete
+  //     </p>
+  //   </>
+  // );
 
-  console.log(giftCardCategoryData);
   return (
     <DashboardLayout>
       <GiftcardStyles>
@@ -325,7 +433,7 @@ function Giftcard() {
       >
         {" "}
         {isLoading ? (
-          <FlexibleDiv margin="20px 0 0 0" height="200px">
+          <FlexibleDiv margin="20px 0 0 0" height="300px">
             <LoadingOutlined />
           </FlexibleDiv>
         ) : (
@@ -341,7 +449,7 @@ function Giftcard() {
                   background="#e0e0e0"
                   hover="#e0e0e0"
                   width="50px"
-                  onClick={handleShowEdit}
+                  onClick={handleShowCategoryEdit}
                 >
                   <FiEdit style={{ fontSize: "20px" }} />
                 </Button>
@@ -351,7 +459,7 @@ function Giftcard() {
                   background="red"
                   hover="red"
                   width="max-content"
-                  onClick={handleShowDelete}
+                  onClick={handleShowCategoryDelete}
                 >
                   <img src={Trash} alt="" />
                 </Button>
@@ -379,14 +487,36 @@ function Giftcard() {
                     <span>
                       {item.title}&nbsp; | &nbsp;
                       <b>
-                        {item.amount}&nbsp; {getCurrncy(item.currency)}
+                        NGN {item.amount}&nbsp; {getCurrncy(item.currency)}
                       </b>
                     </span>
                     <Popover
                       placement="bottomLeft"
-                      // title={text}
-                      content={content}
-                      trigger="click"
+                      content={
+                        <>
+                          <p
+                            style={{ opacity: ".5", cursor: "pointer" }}
+                            onClick={() => handleShowGiftcardEdit(item)}
+                          >
+                            <FiEdit
+                              style={{
+                                margin: "0 5px -2px 0",
+                              }}
+                            />
+                            Edit
+                          </p>
+                          <p
+                            style={{ color: "red", cursor: "pointer" }}
+                            onClick={() => handleShowGiftcardDelete(item)}
+                          >
+                            <RiDeleteBin6Line
+                              style={{ margin: "0 5px -2px 0" }}
+                            />
+                            Delete
+                          </p>
+                        </>
+                      }
+                      trigger="hover"
                     >
                       <Button
                         width="max-content"
@@ -454,13 +584,89 @@ function Giftcard() {
                     },
                   ]}
                   name="amount"
+                  type="number"
                 >
                   <Input
                     prefix={<span className="prefix">NGN</span>}
                     placeholder="Trading rate"
                     background="#F5FCFF"
                     height="50px"
-                    type="number"
+                  />
+                </Form.Item>
+                <Select
+                  className="selectInput"
+                  onChange={handleCurrencyCategory}
+                  value={currency}
+                  width="120px"
+                  placeholder="/ $"
+                >
+                  {currencies.map((value, index) => (
+                    <Option value={value.title} key={index}>
+                      {value.sign}
+                    </Option>
+                  ))}
+                </Select>
+              </FlexibleDiv>
+              <Button type="primary" htmlType="submit" width="100%">
+                {isLoading && <LoadingOutlined />}
+                Save
+              </Button>
+            </Form>
+          </FlexibleDiv>
+        </FlexibleDiv>
+      </ModalWrapper>
+
+      {/* Edit gift card */}
+      <ModalWrapper
+        visible={showEditGiftCard}
+        footer={null}
+        closable={true}
+        onCancel={() => setshowEditGiftCard(false)}
+      >
+        <FlexibleDiv flexDir="column">
+          <Typography.Title level={5}>Edit Giftcard</Typography.Title>
+          <FlexibleDiv margin="30px 0">
+            <Form
+              form={editGiftcardForm}
+              onFinish={handleEditGiftCard}
+              style={{ width: "100%" }}
+            >
+              <Form.Item
+                name="title"
+                rules={[
+                  {
+                    required: true,
+                    message: "This field is required",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Gift card"
+                  background="#F5FCFF"
+                  height="50px"
+                />
+              </Form.Item>
+
+              <FlexibleDiv
+                flexWrap="nowrap"
+                justifyContent="space-between"
+                alignItems="flex-start"
+              >
+                <Form.Item
+                  rules={[
+                    {
+                      required: true,
+                      message: "This field is required",
+                    },
+                  ]}
+                  name="amount"
+                  type="number"
+                >
+                  <Input
+                    prefix={<span className="prefix">NGN</span>}
+                    placeholder="Trading rate"
+                    background="#F5FCFF"
+                    height="50px"
                   />
                 </Form.Item>
                 <Select
@@ -536,7 +742,7 @@ function Giftcard() {
           <Typography.Title level={5}>Edit GiftcardCategory</Typography.Title>
           <FlexibleDiv margin="30px 0">
             <Form
-              form={editForm}
+              form={editCategoryForm}
               onFinish={handleEditGiftcardCategory}
               style={{ width: "100%" }}
             >
@@ -583,6 +789,30 @@ function Giftcard() {
             height="45px"
             loading={isLoading}
             onClick={handleDeleteGiftcardCategory}
+          >
+            Delete
+          </Button>
+        </FlexibleDiv>
+      </ModalWrapper>
+
+      {/* delete giftcard  */}
+      <ModalWrapper
+        visible={showDeleteGiftCard}
+        footer={null}
+        closable={true}
+        onCancel={() => setShowDeleteGiftCard(false)}
+      >
+        <FlexibleDiv flexDir="column" height="250px">
+          <Typography.Title level={5}>
+            Are you sure you want to delete this giftcard
+          </Typography.Title>
+          <Button
+            type="primary"
+            htmlType="submit"
+            width="200px"
+            height="45px"
+            loading={isLoading}
+            onClick={handleDeleteGiftcard}
           >
             Delete
           </Button>
