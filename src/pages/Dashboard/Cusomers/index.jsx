@@ -7,7 +7,6 @@ import CustomTable from "../../../components/Table";
 import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi";
 import { TableDrawer } from "../../../components/Drawer";
 import { CustomersStyles } from "./styles";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiEdit } from "react-icons/fi";
 import Phone from "../../../assets/svgs/call.svg";
 import Mail from "../../../assets/svgs/sms.svg";
@@ -17,6 +16,7 @@ import { Typography, Popover, notification, Form } from "antd";
 import { deleteUser, updateUser } from "../../../network/users";
 import { ModalWrapper } from "../../../components/ModalStylesWrap";
 import { SmileOutlined } from "@ant-design/icons";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function Customers() {
   const [searching, setSearching] = useState(false);
@@ -26,6 +26,8 @@ function Customers() {
   const [showDeleteCustomer, setShowDeleteCustomer] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showEditCustomer, setshowEditCustomer] = useState(false);
+  const [phoneCopy, setPhoneCopy] = useState(false);
+  const [emailCopy, setEmailCopy] = useState(false);
 
   const [editForm] = Form.useForm();
 
@@ -52,20 +54,20 @@ function Customers() {
       title: "SN",
       dataIndex: "sn",
       key: "sn",
-      render: (id, user) => console.log(id, user),
+      render: (arr, user, id) => `${id + 1}.`,
     },
 
     {
       title: "Email address",
       dataIndex: "email",
       key: "email",
-      render: (id, user) => user.email,
+      render: (arr, user) => user.email,
     },
     {
       title: "Phone number",
       dataIndex: "phone",
       key: "phone",
-      render: (id, user) => user.phoneNumber,
+      render: (arr, user) => user.phoneNumber,
     },
     // {
     //   title: "Last active",
@@ -92,7 +94,7 @@ function Customers() {
       title: "",
       dataIndex: "id",
       key: "id",
-      render: (id, user) => (
+      render: (arr, user) => (
         <BiDotsVerticalRounded
           className="menu"
           onClick={() => handleShowDrawer(user)}
@@ -259,14 +261,28 @@ function Customers() {
           <FlexibleDiv justifyContent="flex-start">
             <img src={Mail} alt="" />
             <Typography.Title level={5}>{customerData?.email}</Typography.Title>
-            <span className="copy">Copy email</span>
+            <CopyToClipboard
+              text={customerData?.email}
+              onCopy={() => setEmailCopy(true)}
+            >
+              <span className={!!emailCopy ? "copied" : "copy"}>
+                Copy email
+              </span>
+            </CopyToClipboard>
           </FlexibleDiv>
           <FlexibleDiv justifyContent="flex-start" margin="20px 0">
             <img src={Phone} alt="" />
             <Typography.Title level={5}>
               {customerData?.phoneNumber}
             </Typography.Title>
-            <span className="copy">Copy phone</span>
+            <CopyToClipboard
+              text={customerData?.phoneNumber}
+              onCopy={() => setPhoneCopy(true)}
+            >
+              <span className={!!phoneCopy ? "copied" : "copy"}>
+                Copy phone
+              </span>
+            </CopyToClipboard>
           </FlexibleDiv>
 
           <FlexibleDiv

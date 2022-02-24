@@ -1,19 +1,20 @@
-import React, { useState } from "react"
-import DashboardLayout from "../../../components/Layout"
-import Input from "../../../components/TextField"
-import { FlexibleDiv } from "../../../components/Box/styles"
-import { Typography, Popover, Form, notification } from "antd"
-import Button from "../../../components/Button"
-import CustomTable from "../../../components/Table"
-import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi"
-import { TableDrawer } from "../../../components/Drawer"
-import { GiftcardStyles } from "./styles"
-import { RiDeleteBin6Line } from "react-icons/ri"
-import { FiEdit } from "react-icons/fi"
-import { ModalWrapper } from "../../../components/ModalStylesWrap"
-import { SmileOutlined, LoadingOutlined } from "@ant-design/icons"
-import Select from "../../../components/Select"
-import { giftCards, currencies } from "../../../utils/dataHelpers/selectData"
+import React, { useState } from "react";
+import DashboardLayout from "../../../components/Layout";
+import Input from "../../../components/TextField";
+import { FlexibleDiv } from "../../../components/Box/styles";
+import { Typography, Popover, Form, notification } from "antd";
+import Button from "../../../components/Button";
+import CustomTable from "../../../components/Table";
+import { BiDotsVerticalRounded, BiSearch } from "react-icons/bi";
+import { TableDrawer } from "../../../components/Drawer";
+import { GiftcardStyles } from "./styles";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { FiEdit } from "react-icons/fi";
+import { ModalWrapper } from "../../../components/ModalStylesWrap";
+import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
+import Select from "../../../components/Select";
+import { giftCards, currencies } from "../../../utils/dataHelpers/selectData";
+import Trash from "../../../assets/svgs/trash.svg";
 import {
   addGiftCard,
   updateGiftCard,
@@ -23,110 +24,131 @@ import {
   deleteGiftCardCategory,
   addGiftCardCategory,
   getAllGiftCardCategories,
-} from "../../../network/giftcards"
+  updateGiftCardCategory,
+} from "../../../network/giftcards";
 
 function Giftcard() {
-  const [searching, setSearching] = useState(false)
-  const [searchResults, setSearchResults] = useState()
-  const [showDrawer, setShowDrawer] = useState(false)
-  const [form] = Form.useForm()
-  const [isLoading, setIsLoading] = useState(false)
-  const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false)
-  const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false)
-  const [giftardsList, setGiftCardsList] = useState([])
+  const [searching, setSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState();
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
+  const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false);
+  const [giftardsList, setGiftCardsList] = useState([]);
+  const [giftCardCategoryData, setgiftCardCategoryData] = useState();
+  const [showDeleteGiftCardCategory, setShowDeleteGiftCardCategory] =
+    useState(false);
+  const [showEditGiftCardCategory, setshowEditGiftCardCategory] =
+    useState(false);
+  const [card, setCard] = useState();
+  const [currency, setCurrency] = useState();
 
-  const [card, setCard] = useState()
-  const [currency, setCurrency] = useState()
-
-  const { Option } = Select
+  const { Option } = Select;
 
   const handleCardCategory = (value) => {
-    setCard(value)
-  }
+    setCard(value);
+  };
   const handleCurrencyCategory = (value) => {
-    setCurrency(value)
-  }
+    setCurrency(value);
+  };
 
-  const handleGetAllGiftCards = async () => {
-    setShowDrawer(true)
+  const handleShowEdit = (val) => {
+    editForm.setFieldsValue({
+      title: giftCardCategoryData?.title,
+    });
+    setshowEditGiftCardCategory(true);
+  };
+
+  const handleShowDelete = () => {
+    setShowDeleteGiftCardCategory(true);
+  };
+
+  const handleGetAllGiftCards = async (val) => {
+    setgiftCardCategoryData(val);
+
     const payload = {
       page: "1",
       perPage: "1000",
-    }
+      giftCardCategoryId: val._id,
+    };
     try {
-      const data = await getAllGiftCards(payload)
-      console.log(data)
-      setGiftCardsList(data)
+      const data = await getAllGiftCards(payload);
+      setShowDrawer(true);
+      setGiftCardsList(data);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
-  }
+  };
+
   // create card category
   async function handleCreateCategory(values) {
-    setIsLoading(true)
+    setIsLoading(true);
     const payload = {
       ...values,
-    }
+    };
     try {
-      const data = await addGiftCardCategory(payload)
-      setShowCreateCategoryModal(false)
+      const data = await addGiftCardCategory(payload);
+      setShowCreateCategoryModal(false);
       notification.open({
         message: "Success",
         description: "Catrgory added",
         icon: <SmileOutlined style={{ color: "green" }} />,
-      })
-      setIsLoading(false)
+      });
+      window.location.reload();
+      setIsLoading(false);
     } catch (error) {
       if (error.response) {
         notification.open({
           message: "Error",
           description: error.response.data.message,
           icon: <SmileOutlined style={{ color: "red" }} />,
-        })
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       } else {
         notification.open({
           message: "Error",
           description:
             "There was an issue with your network. Pls try again later",
           icon: <SmileOutlined style={{ color: "red" }} />,
-        })
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       }
     }
   }
   const closeDrawer = () => {
-    setShowDrawer(false)
-    window.location.replace("/")
-  }
+    setShowDrawer(false);
+    window.location.replace("/");
+  };
 
   // add gift card
   async function handleFormSubmit(values) {
-    setIsLoading(true)
+    setIsLoading(true);
     const payload = {
       ...values,
       giftCardCategoryId: card,
       currency: currency,
-    }
+    };
     try {
-      const data = await addGiftCard(payload)
-      setIsLoading(false)
+      const data = await addGiftCard(payload);
+      setIsLoading(false);
     } catch (error) {
       if (error.response) {
         notification.open({
           message: "Error",
           description: error.response.data.message,
           icon: <SmileOutlined style={{ color: "red" }} />,
-        })
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       } else {
         notification.open({
           message: "Error",
           description:
             "There was an issue with your network. Pls try again later",
           icon: <SmileOutlined style={{ color: "red" }} />,
-        })
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       }
     }
   }
@@ -150,11 +172,11 @@ function Giftcard() {
       render: (id, card) => (
         <BiDotsVerticalRounded
           className="menu"
-          onClick={handleGetAllGiftCards}
+          onClick={() => handleGetAllGiftCards(card)}
         />
       ),
     },
-  ]
+  ];
 
   // const handleSearch = async (value) => {
   //   if (value.searchResults === "") {
@@ -175,6 +197,78 @@ function Giftcard() {
   //   }
   // };
 
+  // create delete category
+  async function handleDeleteGiftcardCategory() {
+    setIsLoading(true);
+    try {
+      await deleteGiftCardCategory({
+        giftCardCategoryId: giftCardCategoryData._id,
+      });
+      notification.open({
+        message: "Success",
+        description: "Crypto deleted",
+        icon: <SmileOutlined style={{ color: "green" }} />,
+      });
+      setShowDeleteGiftCardCategory(false);
+      window.location.reload();
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
+  // edit GiftcardCategory
+  async function handleEditGiftcardCategory(values) {
+    setIsLoading(true);
+    const payload = {
+      ...values,
+      giftCardCategoryId: giftCardCategoryData?._id,
+    };
+    try {
+      const data = await updateGiftCardCategory(payload);
+      console.log(data);
+      notification.open({
+        message: "Success",
+        description: "GiftcardCategory updated",
+        icon: <SmileOutlined style={{ color: "green" }} />,
+      });
+      setshowEditGiftCardCategory(false);
+      window.location.replace("/");
+      setIsLoading(false);
+    } catch (error) {
+      if (error.response) {
+        notification.open({
+          message: "Error",
+          description: error.response.data.message,
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      } else {
+        notification.open({
+          message: "Error",
+          description:
+            "There was an issue with your network. Pls try again later",
+          icon: <SmileOutlined style={{ color: "red" }} />,
+        });
+        setIsLoading(false);
+      }
+    }
+  }
+
   const content = (
     <>
       <p style={{ opacity: ".5" }}>
@@ -186,7 +280,8 @@ function Giftcard() {
         Delete
       </p>
     </>
-  )
+  );
+
   return (
     <DashboardLayout>
       <GiftcardStyles>
@@ -229,7 +324,34 @@ function Giftcard() {
         closeDrawer={closeDrawer}
       >
         <FlexibleDiv justifyContent="space-between">
-          <Typography.Title level={4}>Amazon</Typography.Title>
+          <Typography.Title level={4}>
+            {giftCardCategoryData?.title}
+          </Typography.Title>
+          <FlexibleDiv width="120px" justifyContent="space-between">
+            <Button
+              height="50px"
+              boxShadow="none"
+              background="#e0e0e0"
+              hover="#e0e0e0"
+              width="50px"
+              onClick={handleShowEdit}
+            >
+              <FiEdit style={{ fontSize: "20px" }} />
+            </Button>
+            <Button
+              height="50px"
+              boxShadow="none"
+              background="red"
+              hover="red"
+              width="max-content"
+              onClick={handleShowDelete}
+            >
+              <img src={Trash} alt="" />
+            </Button>
+          </FlexibleDiv>
+        </FlexibleDiv>
+        <FlexibleDiv justifyContent="flex-start">
+          {" "}
           <Button height="50px" boxShadow="none">
             + New Giftcard
           </Button>
@@ -398,8 +520,72 @@ function Giftcard() {
           </FlexibleDiv>
         </FlexibleDiv>
       </ModalWrapper>
+
+      {/* edit giftcard category */}
+      <ModalWrapper
+        visible={showEditGiftCardCategory}
+        footer={null}
+        closable={true}
+        onCancel={() => setshowEditGiftCardCategory(false)}
+      >
+        <FlexibleDiv flexDir="column">
+          <Typography.Title level={5}>Edit GiftcardCategory</Typography.Title>
+          <FlexibleDiv margin="30px 0">
+            <Form
+              form={editForm}
+              onFinish={handleEditGiftcardCategory}
+              style={{ width: "100%" }}
+            >
+              <Form.Item
+                name="title"
+                rules={[
+                  {
+                    required: true,
+                    message: "This field is required",
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Card Category"
+                  background="#F5FCFF"
+                  height="50px"
+                />
+              </Form.Item>
+
+              <Button type="primary" htmlType="submit" width="100%">
+                {isLoading && <LoadingOutlined />}
+                Save
+              </Button>
+            </Form>
+          </FlexibleDiv>
+        </FlexibleDiv>
+      </ModalWrapper>
+
+      {/* delete giftcard category */}
+      <ModalWrapper
+        visible={showDeleteGiftCardCategory}
+        footer={null}
+        closable={true}
+        onCancel={() => setShowDeleteGiftCardCategory(false)}
+      >
+        <FlexibleDiv flexDir="column" height="250px">
+          <Typography.Title level={5}>
+            Are you sure you want to delete this Category
+          </Typography.Title>
+          <Button
+            type="primary"
+            htmlType="submit"
+            width="200px"
+            height="45px"
+            loading={isLoading}
+            onClick={handleDeleteGiftcardCategory}
+          >
+            Delete
+          </Button>
+        </FlexibleDiv>
+      </ModalWrapper>
     </DashboardLayout>
-  )
+  );
 }
 
-export default Giftcard
+export default Giftcard;
