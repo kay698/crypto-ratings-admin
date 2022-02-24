@@ -62,5 +62,14 @@ export const TableDrawerStyles = styled(Drawer)`
     .ant-drawer-content-wrapper {
       width: 90% !important;
     }
+    button {
+      height: 40px !important;
+      width: max-content;
+
+      span,
+      svg {
+        font-size: 15px;
+      }
+    }
   }
 `;

@@ -13,7 +13,11 @@ import { FiEdit } from "react-icons/fi";
 import { ModalWrapper } from "../../../components/ModalStylesWrap";
 import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
 import Select from "../../../components/Select";
-import { giftCards, currencies } from "../../../utils/dataHelpers/selectData";
+import {
+  giftCards,
+  currencies,
+  getCurrncy,
+} from "../../../utils/dataHelpers/selectData";
 import Trash from "../../../assets/svgs/trash.svg";
 import {
   addGiftCard,
@@ -36,20 +40,15 @@ function Giftcard() {
   const [isLoading, setIsLoading] = useState(false);
   const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
   const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false);
-  const [giftardsList, setGiftCardsList] = useState([]);
   const [giftCardCategoryData, setgiftCardCategoryData] = useState();
   const [showDeleteGiftCardCategory, setShowDeleteGiftCardCategory] =
     useState(false);
   const [showEditGiftCardCategory, setshowEditGiftCardCategory] =
     useState(false);
-  const [card, setCard] = useState();
   const [currency, setCurrency] = useState();
 
   const { Option } = Select;
 
-  const handleCardCategory = (value) => {
-    setCard(value);
-  };
   const handleCurrencyCategory = (value) => {
     setCurrency(value);
   };
@@ -66,7 +65,8 @@ function Giftcard() {
   };
 
   const handleGetAllGiftCards = async (val) => {
-    setgiftCardCategoryData(val);
+    setShowDrawer(true);
+    setIsLoading(true);
 
     const payload = {
       page: "1",
@@ -74,11 +74,12 @@ function Giftcard() {
       giftCardCategoryId: val._id,
     };
     try {
-      const data = await getAllGiftCards(payload);
-      setShowDrawer(true);
-      setGiftCardsList(data);
+      const { data } = await getAllGiftCards(payload);
+      setgiftCardCategoryData(data);
+      setIsLoading(false);
     } catch (e) {
       console.log(e);
+      setIsLoading(false);
     }
   };
 
@@ -123,16 +124,19 @@ function Giftcard() {
   };
 
   // add gift card
-  async function handleFormSubmit(values) {
+  async function handleCreateGiftCard(values) {
     setIsLoading(true);
     const payload = {
       ...values,
-      giftCardCategoryId: card,
+      categoryId: giftCardCategoryData._id,
       currency: currency,
     };
     try {
       const data = await addGiftCard(payload);
+      const { data: categoryData } = await getAllGiftCards(payload);
+      setgiftCardCategoryData(categoryData);
       setIsLoading(false);
+      setShowCreateGiftCardModal(false);
     } catch (error) {
       if (error.response) {
         notification.open({
@@ -240,14 +244,9 @@ function Giftcard() {
     };
     try {
       const data = await updateGiftCardCategory(payload);
-      console.log(data);
-      notification.open({
-        message: "Success",
-        description: "GiftcardCategory updated",
-        icon: <SmileOutlined style={{ color: "green" }} />,
-      });
+      const { data: categoryData } = await getAllGiftCards(payload);
+      setgiftCardCategoryData(categoryData);
       setshowEditGiftCardCategory(false);
-      window.location.replace("/");
       setIsLoading(false);
     } catch (error) {
       if (error.response) {
@@ -282,6 +281,7 @@ function Giftcard() {
     </>
   );
 
+  console.log(giftCardCategoryData);
   return (
     <DashboardLayout>
       <GiftcardStyles>
@@ -323,74 +323,91 @@ function Giftcard() {
         setDrawer={setShowDrawer}
         closeDrawer={closeDrawer}
       >
-        <FlexibleDiv justifyContent="space-between">
-          <Typography.Title level={4}>
-            {giftCardCategoryData?.title}
-          </Typography.Title>
-          <FlexibleDiv width="120px" justifyContent="space-between">
-            <Button
-              height="50px"
-              boxShadow="none"
-              background="#e0e0e0"
-              hover="#e0e0e0"
-              width="50px"
-              onClick={handleShowEdit}
-            >
-              <FiEdit style={{ fontSize: "20px" }} />
-            </Button>
-            <Button
-              height="50px"
-              boxShadow="none"
-              background="red"
-              hover="red"
-              width="max-content"
-              onClick={handleShowDelete}
-            >
-              <img src={Trash} alt="" />
-            </Button>
+        {" "}
+        {isLoading ? (
+          <FlexibleDiv margin="20px 0 0 0" height="200px">
+            <LoadingOutlined />
           </FlexibleDiv>
-        </FlexibleDiv>
-        <FlexibleDiv justifyContent="flex-start">
-          {" "}
-          <Button height="50px" boxShadow="none">
-            + New Giftcard
-          </Button>
-        </FlexibleDiv>
-        <FlexibleDiv flexDir="column" margin="20px 0 0 0">
-          {!!giftardsList?.length ? (
-            giftardsList?.map((item, idx) => (
-              <FlexibleDiv
-                justifyContent="space-between"
-                key={idx}
-                className="drawerItems_wrap"
-              >
-                <span>
-                  {item.cardData}&nbsp; | &nbsp;<b>{item.price}</b>
-                </span>
-                <Popover
-                  placement="bottomLeft"
-                  // title={text}
-                  content={content}
-                  trigger="click"
+        ) : (
+          <>
+            <FlexibleDiv justifyContent="space-between">
+              <Typography.Title level={4}>
+                {giftCardCategoryData?.title}
+              </Typography.Title>
+              <FlexibleDiv width="120px" justifyContent="space-between">
+                <Button
+                  height="50px"
+                  boxShadow="none"
+                  background="#e0e0e0"
+                  hover="#e0e0e0"
+                  width="50px"
+                  onClick={handleShowEdit}
                 >
-                  <Button
-                    width="max-content"
-                    height="max-content"
-                    background="transparent"
-                    boxShadow="none"
-                    hover="transparent"
-                  >
-                    <BiDotsVerticalRounded className="menu" />
-                  </Button>
-                </Popover>
+                  <FiEdit style={{ fontSize: "20px" }} />
+                </Button>
+                <Button
+                  height="50px"
+                  boxShadow="none"
+                  background="red"
+                  hover="red"
+                  width="max-content"
+                  onClick={handleShowDelete}
+                >
+                  <img src={Trash} alt="" />
+                </Button>
               </FlexibleDiv>
-            ))
-          ) : (
-            <FlexibleDiv height="200px">
-              <Typography.Title level={2}>No Data</Typography.Title>
             </FlexibleDiv>
-          )}
-        </FlexibleDiv>
+            <FlexibleDiv justifyContent="flex-start" margin="20px 0 0 0">
+              {" "}
+              <Button
+                height="50px"
+                boxShadow="none"
+                onClick={() => setShowCreateGiftCardModal(true)}
+              >
+                + New Giftcard
+              </Button>
+            </FlexibleDiv>
+
+            <FlexibleDiv flexDir="column" margin="20px 0 0 0">
+              {!!giftCardCategoryData?.giftcards?.length ? (
+                giftCardCategoryData?.giftcards?.map((item, idx) => (
+                  <FlexibleDiv
+                    justifyContent="space-between"
+                    key={idx}
+                    className="drawerItems_wrap"
+                  >
+                    <span>
+                      {item.title}&nbsp; | &nbsp;
+                      <b>
+                        {item.amount}&nbsp; {getCurrncy(item.currency)}
+                      </b>
+                    </span>
+                    <Popover
+                      placement="bottomLeft"
+                      // title={text}
+                      content={content}
+                      trigger="click"
+                    >
+                      <Button
+                        width="max-content"
+                        height="max-content"
+                        background="transparent"
+                        boxShadow="none"
+                        hover="transparent"
+                      >
+                        <BiDotsVerticalRounded className="menu" />
+                      </Button>
+                    </Popover>
+                  </FlexibleDiv>
+                ))
+              ) : (
+                <FlexibleDiv height="200px">
+                  <Typography.Title level={5}>No Data</Typography.Title>
+                </FlexibleDiv>
+              )}
+            </FlexibleDiv>
+          </>
+        )}
       </TableDrawer>
 
       {/* create gift card */}
@@ -405,7 +422,7 @@ function Giftcard() {
           <FlexibleDiv margin="30px 0">
             <Form
               form={form}
-              onFinish={handleFormSubmit}
+              onFinish={handleCreateGiftCard}
               style={{ width: "100%" }}
             >
               <Form.Item
@@ -423,20 +440,7 @@ function Giftcard() {
                   height="50px"
                 />
               </Form.Item>
-              <Form.Item>
-                <Select
-                  placeholder="Select Category"
-                  className="selectInput"
-                  onChange={handleCardCategory}
-                  value={card}
-                >
-                  {giftCards.map((value, index) => (
-                    <Option value={value} key={index}>
-                      {value}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
+
               <FlexibleDiv
                 flexWrap="nowrap"
                 justifyContent="space-between"

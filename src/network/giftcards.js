@@ -26,7 +26,7 @@ export async function getAllGiftCardCategories(payload) {
 }
 
 export const getAllGiftCards = async function (payload) {
-  const data = await instance.get(
+  const { data } = await instance.get(
     `/gift-cards/category/${payload.giftCardCategoryId}?page=${payload.page}&perPage=${payload.perPage}`
   );
   return data;
