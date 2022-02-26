@@ -10,18 +10,18 @@ const CustomTable = ({
   maxWidth,
   defaultPageSize,
   setSelectedData,
-  addBusinnessId,
   searchResults,
+  searching,
 }) => {
   const [tableData, setTableData] = useState([]);
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: defaultPageSize || 10,
+    pageSize: defaultPageSize || 20,
     total: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [query, setQuery] = useState(`page=1&perPage=${defaultPageSize || 10}`);
-  const [pageSize, setPageSize] = useState(defaultPageSize || 10);
+  const [query, setQuery] = useState(`page=1&perPage=${defaultPageSize || 20}`);
+  const [pageSize, setPageSize] = useState(defaultPageSize || 20);
 
   useEffect(() => {
     async function fetchData() {
@@ -62,11 +62,11 @@ const CustomTable = ({
     <TableStyles>
       <OverFlowScrollBar>
         <Table
-          dataSource={searchResults?.length ? searchResults : tableData}
+          dataSource={searchResults || tableData}
           columns={columns}
           noShadow={true}
           pagination={pagination}
-          loading={isLoading}
+          loading={searching || isLoading}
           onChange={handleTabChange}
           scroll={{ x: maxWidth || 700 }}
           rowSelection={setSelectedData ? rowSelection : undefined}

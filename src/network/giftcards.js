@@ -19,9 +19,7 @@ export const updateGiftCardCategory = async function (payload) {
   return data;
 };
 export async function getAllGiftCardCategories(payload) {
-  const { data } = await instance.get(
-    `/gift-cards?page=${payload.page}&perPage=${payload.perPage}`
-  );
+  const { data } = await instance.get(`/gift-cards?${payload}`);
   return data;
 }
 

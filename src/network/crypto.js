@@ -11,9 +11,7 @@ export const updateCrypto = async function (payload) {
 };
 
 export const getAllCrypto = async function (payload) {
-  const data = await instance.get(
-    `/crypto?page=${payload.page}&perPage=${payload.perPage}`
-  );
+  const data = await instance.get(`/crypto?${payload}`);
   return data;
 };
 

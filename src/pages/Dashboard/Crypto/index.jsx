@@ -23,8 +23,9 @@ import { currencies, getCurrncy } from "../../../utils/dataHelpers/selectData";
 import UploadImageIcon from "../../../assets/pngs/uploadImage.png";
 
 function Crypto() {
-  const [searching, setSearching] = useState(false);
+  const [saveSearch, setSaveSearch] = useState();
   const [searchResults, setSearchResults] = useState();
+  const [searching, setSearching] = useState(false);
   const [showAddNewCrypto, setShowAddNewCrypto] = useState(false);
   const [showDeleteCrypto, setShowDeleteCrypto] = useState(false);
   const [showEditCrypto, setShowEditCrypto] = useState(false);
@@ -220,24 +221,30 @@ function Crypto() {
       }
     }
   }
-  // const handleSearch = async (value) => {
-  //   if (value.searchResults === "") {
-  //     return;
-  //   }
-  //   setSearching(true);
-  //   try {
-  //     const data = await searchTeam(
-  //       businessOwner?.businessId,
-  //       value.searchResults
-  //     );
 
-  //     setSearching(false);
-  //     setSearchResults(data);
-  //   } catch (e) {
-  //     setSearching(false);
-  //     console.log(e);
-  //   }
-  // };
+  const searchChange = (e) => {
+    const { value } = e.target;
+    if (!!value) {
+      setSaveSearch(value);
+    } else {
+      setSaveSearch("");
+      setSearchResults();
+    }
+  };
+
+  const handleSearch = async () => {
+    setSearching(true);
+    const payload = `page=1&perPage=1000&query=${saveSearch}`;
+    try {
+      const { data } = await getAllCrypto(payload);
+
+      setSearching(false);
+      setSearchResults(data?.data);
+    } catch (e) {
+      setSearching(false);
+      console.log(e);
+    }
+  };
 
   async function handleImage(event) {
     setPictureLoading(true);
@@ -300,6 +307,18 @@ function Crypto() {
                 height="50px"
                 radius="8px"
                 prefix={<BiSearch />}
+                onChange={searchChange}
+                suffix={
+                  !!saveSearch && (
+                    <Button
+                      width="max-content"
+                      height="40px"
+                      onClick={handleSearch}
+                    >
+                      Search
+                    </Button>
+                  )
+                }
               />
               <Button
                 height="50px"
@@ -310,10 +329,12 @@ function Crypto() {
               </Button>
             </FlexibleDiv>
           </FlexibleDiv>
+
           <CustomTable
             func={getAllCrypto}
             columns={columns}
             searchResults={searchResults}
+            searching={searching}
           />
         </FlexibleDiv>
       </CryptoStyles>

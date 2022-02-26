@@ -29,8 +29,9 @@ import {
 import UploadImageIcon from "../../../assets/pngs/uploadImage.png";
 
 function Giftcard() {
-  const [searching, setSearching] = useState(false);
+  const [saveSearch, setSaveSearch] = useState();
   const [searchResults, setSearchResults] = useState();
+  const [searching, setSearching] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [form] = Form.useForm();
   const [editCategoryForm] = Form.useForm();
@@ -250,24 +251,30 @@ function Giftcard() {
     },
   ];
 
-  // const handleSearch = async (value) => {
-  //   if (value.searchResults === "") {
-  //     return;
-  //   }
-  //   setSearching(true);
-  //   try {
-  //     const data = await searchTeam(
-  //       businessOwner?.businessId,
-  //       value.searchResults
-  //     );
+  const searchChange = (e) => {
+    const { value } = e.target;
+    if (!!value) {
+      setSaveSearch(value);
+    } else {
+      setSaveSearch("");
+      setSearchResults();
+    }
+  };
 
-  //     setSearching(false);
-  //     setSearchResults(data);
-  //   } catch (e) {
-  //     setSearching(false);
-  //     console.log(e);
-  //   }
-  // };
+  const handleSearch = async () => {
+    setSearching(true);
+    const payload = `page=1&perPage=1000&query=${saveSearch}`;
+    try {
+      const { data } = await getAllGiftCardCategories(payload);
+
+      setSearching(false);
+      console.log(data);
+      setSearchResults(data);
+    } catch (e) {
+      setSearching(false);
+      console.log(e);
+    }
+  };
 
   // create delete category
   async function handleDeleteGiftcardCategory() {
@@ -409,17 +416,14 @@ function Giftcard() {
     } catch (error) {
       if (error.response && error.response.data) {
         console.log(error.response.data);
-        // notification.open({
-        //   message: "Error",
-        //   description: "Only Images are allowed. Please upload an image instead.",
-        //   icon: <SmileOutlined style={{ color: "red" }} />,
-        // });
       } else {
         console.log(error);
         setPictureLoading(false);
       }
     }
   }
+
+  console.log(saveSearch, searchResults);
 
   return (
     <DashboardLayout>
@@ -440,6 +444,18 @@ function Giftcard() {
                 height="50px"
                 radius="8px"
                 prefix={<BiSearch />}
+                onChange={searchChange}
+                suffix={
+                  !!saveSearch && (
+                    <Button
+                      width="max-content"
+                      height="40px"
+                      onClick={handleSearch}
+                    >
+                      Search
+                    </Button>
+                  )
+                }
               />
               <Button
                 height="50px"
@@ -454,6 +470,7 @@ function Giftcard() {
             func={getAllGiftCardCategories}
             columns={columns}
             searchResults={searchResults}
+            searching={searching}
           />
         </FlexibleDiv>
       </GiftcardStyles>

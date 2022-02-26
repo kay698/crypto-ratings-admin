@@ -15,6 +15,12 @@ export const GiftcardStyles = styled.div`
       align-items: flex-start;
       .search_wrap {
         width: 100%;
+        flex-direction: column;
+        align-items: flex-end;
+        .ant-input-affix-wrapper {
+          width: 100% !important;
+          margin-bottom: 12px;
+        }
       }
     }
   }
