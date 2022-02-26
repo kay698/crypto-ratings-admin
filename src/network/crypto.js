@@ -28,3 +28,8 @@ export const deleteCrypto = async function (payload) {
   });
   return data;
 };
+
+export const uploadFile = async function (file) {
+  const data = await instance.post(`/media/create`, file);
+  return data;
+};

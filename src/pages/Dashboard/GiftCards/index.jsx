@@ -13,17 +13,12 @@ import { FiEdit } from "react-icons/fi";
 import { ModalWrapper } from "../../../components/ModalStylesWrap";
 import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
 import Select from "../../../components/Select";
-import {
-  giftCards,
-  currencies,
-  getCurrncy,
-} from "../../../utils/dataHelpers/selectData";
+import { currencies, getCurrncy } from "../../../utils/dataHelpers/selectData";
 import Trash from "../../../assets/svgs/trash.svg";
 import {
   addGiftCard,
   updateGiftCard,
   getAllGiftCards,
-  getSingleGiftCard,
   deleteGiftCard,
   deleteGiftCardCategory,
   addGiftCardCategory,
@@ -66,6 +61,7 @@ function Giftcard() {
       title: giftCardCategoryData?.title,
     });
     setshowEditGiftCardCategory(true);
+    setImage(giftCardCategoryData?.logo);
   };
 
   const handleShowGiftcardEdit = (val) => {
@@ -770,7 +766,7 @@ function Giftcard() {
                 ) : (
                   <>
                     {" "}
-                    <label htmlFor="addImage" className={"addProductImage"}>
+                    <label htmlFor="addImage">
                       <FlexibleDiv
                         className="imageWrap"
                         width="max-content"
@@ -829,14 +825,14 @@ function Giftcard() {
                 />
               </Form.Item>
               <FlexibleDiv flexDir="column" margin="0 0 10px 0">
-                <span className="label">Upload Image</span>
+                <span className="label">Edit Image</span>
 
                 {pictureLoading ? (
                   <LoadingOutlined />
                 ) : (
                   <>
                     {" "}
-                    <label htmlFor="addImage" className={"addProductImage"}>
+                    <label htmlFor="addImage">
                       <FlexibleDiv
                         className="imageWrap"
                         width="max-content"
