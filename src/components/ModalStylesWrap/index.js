@@ -22,4 +22,14 @@ export const ModalWrapper = styled(Modal)`
   h5 {
     text-align: center;
   }
+
+  .imageWrap {
+    width: 150px;
+    height: auto;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
 `;

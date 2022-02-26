@@ -29,7 +29,9 @@ import {
   addGiftCardCategory,
   getAllGiftCardCategories,
   updateGiftCardCategory,
+  uploadFile,
 } from "../../../network/giftcards";
+import UploadImageIcon from "../../../assets/pngs/uploadImage.png";
 
 function Giftcard() {
   const [searching, setSearching] = useState(false);
@@ -38,7 +40,8 @@ function Giftcard() {
   const [form] = Form.useForm();
   const [editCategoryForm] = Form.useForm();
   const [editGiftcardForm] = Form.useForm();
-
+  const [image, setImage] = useState();
+  const [pictureLoading, setPictureLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
   const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false);
@@ -108,6 +111,7 @@ function Giftcard() {
     setIsLoading(true);
     const payload = {
       ...values,
+      logo: image,
     };
     try {
       const data = await addGiftCardCategory(payload);
@@ -236,6 +240,7 @@ function Giftcard() {
       dataIndex: "giftcard",
       render: (cgiftcard, card) => `${card.giftCards}  categories`,
     },
+
     {
       title: "",
       dataIndex: "id",
@@ -349,6 +354,7 @@ function Giftcard() {
     setIsLoading(true);
     const payload = {
       ...values,
+      logo: image,
       giftCardCategoryId: giftCardCategoryData?._id,
     };
     try {
@@ -377,18 +383,47 @@ function Giftcard() {
     }
   }
 
-  // const content = (
-  //   <>
-  //     <p style={{ opacity: ".5" }}>
-  //       <FiEdit style={{ margin: "0 5px -2px 0" }} />
-  //       Edit
-  //     </p>
-  //     <p style={{ color: "red" }}>
-  //       <RiDeleteBin6Line style={{ margin: "0 5px -2px 0" }} />
-  //       Delete
-  //     </p>
-  //   </>
-  // );
+  async function handleImage(event) {
+    setPictureLoading(true);
+    const maxFileLimit = 512000; // 64kb
+    if (event.target.files[0].type.indexOf("image") < 0) {
+      notification.open({
+        message: "Error",
+        description: "Only Images are allowed. Please upload an image instead.",
+        icon: <SmileOutlined style={{ color: "red" }} />,
+      });
+      return;
+    }
+    if (event.target.files[0].size > maxFileLimit) {
+      notification.open({
+        message: "Error",
+        description: "File is too large, Max file size is 64kb",
+        icon: <SmileOutlined style={{ color: "red" }} />,
+      });
+      return;
+    }
+    const { files } = event.target;
+    const formData = new FormData();
+    formData.append("file", files[0]);
+
+    try {
+      const { data } = await uploadFile(formData);
+      setPictureLoading(false);
+      setImage(data);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.log(error.response.data);
+        // notification.open({
+        //   message: "Error",
+        //   description: "Only Images are allowed. Please upload an image instead.",
+        //   icon: <SmileOutlined style={{ color: "red" }} />,
+        // });
+      } else {
+        console.log(error);
+        setPictureLoading(false);
+      }
+    }
+  }
 
   return (
     <DashboardLayout>
@@ -440,7 +475,12 @@ function Giftcard() {
           <>
             <FlexibleDiv justifyContent="space-between">
               <Typography.Title level={4}>
-                {giftCardCategoryData?.title}
+                {giftCardCategoryData?.title}{" "}
+                <img
+                  src={giftCardCategoryData?.logo}
+                  alt=""
+                  className="logoWrap"
+                />
               </Typography.Title>
               <FlexibleDiv width="120px" justifyContent="space-between">
                 <Button
@@ -465,7 +505,7 @@ function Giftcard() {
                 </Button>
               </FlexibleDiv>
             </FlexibleDiv>
-            <FlexibleDiv justifyContent="flex-start" margin="20px 0 0 0">
+            <FlexibleDiv justifyContent="space-between" margin="20px 0 0 0">
               {" "}
               <Button
                 height="50px"
@@ -722,6 +762,33 @@ function Giftcard() {
                   height="50px"
                 />
               </Form.Item>
+              <FlexibleDiv flexDir="column" margin="0 0 10px 0">
+                <span className="label">Upload Image</span>
+
+                {pictureLoading ? (
+                  <LoadingOutlined />
+                ) : (
+                  <>
+                    {" "}
+                    <label htmlFor="addImage" className={"addProductImage"}>
+                      <FlexibleDiv
+                        className="imageWrap"
+                        width="max-content"
+                        height="max-content"
+                      >
+                        <img src={image || UploadImageIcon} alt="" />
+                      </FlexibleDiv>
+                    </label>
+                    <Input
+                      hidden
+                      type="file"
+                      id={"addImage"}
+                      name="file"
+                      onChange={handleImage}
+                    />{" "}
+                  </>
+                )}
+              </FlexibleDiv>
               <Button type="primary" htmlType="submit" width="100%">
                 {isLoading && <LoadingOutlined />}
                 Save
@@ -761,6 +828,33 @@ function Giftcard() {
                   height="50px"
                 />
               </Form.Item>
+              <FlexibleDiv flexDir="column" margin="0 0 10px 0">
+                <span className="label">Upload Image</span>
+
+                {pictureLoading ? (
+                  <LoadingOutlined />
+                ) : (
+                  <>
+                    {" "}
+                    <label htmlFor="addImage" className={"addProductImage"}>
+                      <FlexibleDiv
+                        className="imageWrap"
+                        width="max-content"
+                        height="max-content"
+                      >
+                        <img src={image || UploadImageIcon} alt="" />
+                      </FlexibleDiv>
+                    </label>
+                    <Input
+                      hidden
+                      type="file"
+                      id={"addImage"}
+                      name="file"
+                      onChange={handleImage}
+                    />{" "}
+                  </>
+                )}
+              </FlexibleDiv>
 
               <Button type="primary" htmlType="submit" width="100%">
                 {isLoading && <LoadingOutlined />}
