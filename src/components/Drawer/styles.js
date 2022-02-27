@@ -72,4 +72,9 @@ export const TableDrawerStyles = styled(Drawer)`
       }
     }
   }
+
+  .logoWrap {
+    width: 70px;
+    height: auto;
+  }
 `;

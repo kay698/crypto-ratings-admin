@@ -13,32 +13,31 @@ import { FiEdit } from "react-icons/fi";
 import { ModalWrapper } from "../../../components/ModalStylesWrap";
 import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
 import Select from "../../../components/Select";
-import {
-  giftCards,
-  currencies,
-  getCurrncy,
-} from "../../../utils/dataHelpers/selectData";
+import { currencies, getCurrncy } from "../../../utils/dataHelpers/selectData";
 import Trash from "../../../assets/svgs/trash.svg";
 import {
   addGiftCard,
   updateGiftCard,
   getAllGiftCards,
-  getSingleGiftCard,
   deleteGiftCard,
   deleteGiftCardCategory,
   addGiftCardCategory,
   getAllGiftCardCategories,
   updateGiftCardCategory,
+  uploadFile,
 } from "../../../network/giftcards";
+import UploadImageIcon from "../../../assets/pngs/uploadImage.png";
 
 function Giftcard() {
-  const [searching, setSearching] = useState(false);
+  const [saveSearch, setSaveSearch] = useState();
   const [searchResults, setSearchResults] = useState();
+  const [searching, setSearching] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [form] = Form.useForm();
   const [editCategoryForm] = Form.useForm();
   const [editGiftcardForm] = Form.useForm();
-
+  const [image, setImage] = useState();
+  const [pictureLoading, setPictureLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
   const [showCreateGiftCardModal, setShowCreateGiftCardModal] = useState(false);
@@ -63,6 +62,7 @@ function Giftcard() {
       title: giftCardCategoryData?.title,
     });
     setshowEditGiftCardCategory(true);
+    setImage(giftCardCategoryData?.logo);
   };
 
   const handleShowGiftcardEdit = (val) => {
@@ -108,6 +108,7 @@ function Giftcard() {
     setIsLoading(true);
     const payload = {
       ...values,
+      logo: image,
     };
     try {
       const data = await addGiftCardCategory(payload);
@@ -236,6 +237,7 @@ function Giftcard() {
       dataIndex: "giftcard",
       render: (cgiftcard, card) => `${card.giftCards}  categories`,
     },
+
     {
       title: "",
       dataIndex: "id",
@@ -249,24 +251,30 @@ function Giftcard() {
     },
   ];
 
-  // const handleSearch = async (value) => {
-  //   if (value.searchResults === "") {
-  //     return;
-  //   }
-  //   setSearching(true);
-  //   try {
-  //     const data = await searchTeam(
-  //       businessOwner?.businessId,
-  //       value.searchResults
-  //     );
+  const searchChange = (e) => {
+    const { value } = e.target;
+    if (!!value) {
+      setSaveSearch(value);
+    } else {
+      setSaveSearch("");
+      setSearchResults();
+    }
+  };
 
-  //     setSearching(false);
-  //     setSearchResults(data);
-  //   } catch (e) {
-  //     setSearching(false);
-  //     console.log(e);
-  //   }
-  // };
+  const handleSearch = async () => {
+    setSearching(true);
+    const payload = `page=1&perPage=1000&query=${saveSearch}`;
+    try {
+      const { data } = await getAllGiftCardCategories(payload);
+
+      setSearching(false);
+      console.log(data);
+      setSearchResults(data);
+    } catch (e) {
+      setSearching(false);
+      console.log(e);
+    }
+  };
 
   // create delete category
   async function handleDeleteGiftcardCategory() {
@@ -349,6 +357,7 @@ function Giftcard() {
     setIsLoading(true);
     const payload = {
       ...values,
+      logo: image,
       giftCardCategoryId: giftCardCategoryData?._id,
     };
     try {
@@ -377,18 +386,44 @@ function Giftcard() {
     }
   }
 
-  // const content = (
-  //   <>
-  //     <p style={{ opacity: ".5" }}>
-  //       <FiEdit style={{ margin: "0 5px -2px 0" }} />
-  //       Edit
-  //     </p>
-  //     <p style={{ color: "red" }}>
-  //       <RiDeleteBin6Line style={{ margin: "0 5px -2px 0" }} />
-  //       Delete
-  //     </p>
-  //   </>
-  // );
+  async function handleImage(event) {
+    setPictureLoading(true);
+    const maxFileLimit = 512000; // 64kb
+    if (event.target.files[0].type.indexOf("image") < 0) {
+      notification.open({
+        message: "Error",
+        description: "Only Images are allowed. Please upload an image instead.",
+        icon: <SmileOutlined style={{ color: "red" }} />,
+      });
+      return;
+    }
+    if (event.target.files[0].size > maxFileLimit) {
+      notification.open({
+        message: "Error",
+        description: "File is too large, Max file size is 64kb",
+        icon: <SmileOutlined style={{ color: "red" }} />,
+      });
+      return;
+    }
+    const { files } = event.target;
+    const formData = new FormData();
+    formData.append("file", files[0]);
+
+    try {
+      const { data } = await uploadFile(formData);
+      setPictureLoading(false);
+      setImage(data);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.log(error.response.data);
+      } else {
+        console.log(error);
+        setPictureLoading(false);
+      }
+    }
+  }
+
+  console.log(saveSearch, searchResults);
 
   return (
     <DashboardLayout>
@@ -409,6 +444,18 @@ function Giftcard() {
                 height="50px"
                 radius="8px"
                 prefix={<BiSearch />}
+                onChange={searchChange}
+                suffix={
+                  !!saveSearch && (
+                    <Button
+                      width="max-content"
+                      height="40px"
+                      onClick={handleSearch}
+                    >
+                      Search
+                    </Button>
+                  )
+                }
               />
               <Button
                 height="50px"
@@ -423,6 +470,7 @@ function Giftcard() {
             func={getAllGiftCardCategories}
             columns={columns}
             searchResults={searchResults}
+            searching={searching}
           />
         </FlexibleDiv>
       </GiftcardStyles>
@@ -440,7 +488,12 @@ function Giftcard() {
           <>
             <FlexibleDiv justifyContent="space-between">
               <Typography.Title level={4}>
-                {giftCardCategoryData?.title}
+                {giftCardCategoryData?.title}{" "}
+                <img
+                  src={giftCardCategoryData?.logo}
+                  alt=""
+                  className="logoWrap"
+                />
               </Typography.Title>
               <FlexibleDiv width="120px" justifyContent="space-between">
                 <Button
@@ -465,7 +518,7 @@ function Giftcard() {
                 </Button>
               </FlexibleDiv>
             </FlexibleDiv>
-            <FlexibleDiv justifyContent="flex-start" margin="20px 0 0 0">
+            <FlexibleDiv justifyContent="space-between" margin="20px 0 0 0">
               {" "}
               <Button
                 height="50px"
@@ -722,6 +775,33 @@ function Giftcard() {
                   height="50px"
                 />
               </Form.Item>
+              <FlexibleDiv flexDir="column" margin="0 0 10px 0">
+                <span className="label">Upload Image</span>
+
+                {pictureLoading ? (
+                  <LoadingOutlined />
+                ) : (
+                  <>
+                    {" "}
+                    <label htmlFor="addImage">
+                      <FlexibleDiv
+                        className="imageWrap"
+                        width="max-content"
+                        height="max-content"
+                      >
+                        <img src={image || UploadImageIcon} alt="" />
+                      </FlexibleDiv>
+                    </label>
+                    <Input
+                      hidden
+                      type="file"
+                      id={"addImage"}
+                      name="file"
+                      onChange={handleImage}
+                    />{" "}
+                  </>
+                )}
+              </FlexibleDiv>
               <Button type="primary" htmlType="submit" width="100%">
                 {isLoading && <LoadingOutlined />}
                 Save
@@ -761,6 +841,33 @@ function Giftcard() {
                   height="50px"
                 />
               </Form.Item>
+              <FlexibleDiv flexDir="column" margin="0 0 10px 0">
+                <span className="label">Edit Image</span>
+
+                {pictureLoading ? (
+                  <LoadingOutlined />
+                ) : (
+                  <>
+                    {" "}
+                    <label htmlFor="addImage">
+                      <FlexibleDiv
+                        className="imageWrap"
+                        width="max-content"
+                        height="max-content"
+                      >
+                        <img src={image || UploadImageIcon} alt="" />
+                      </FlexibleDiv>
+                    </label>
+                    <Input
+                      hidden
+                      type="file"
+                      id={"addImage"}
+                      name="file"
+                      onChange={handleImage}
+                    />{" "}
+                  </>
+                )}
+              </FlexibleDiv>
 
               <Button type="primary" htmlType="submit" width="100%">
                 {isLoading && <LoadingOutlined />}

@@ -19,9 +19,7 @@ export const updateGiftCardCategory = async function (payload) {
   return data;
 };
 export async function getAllGiftCardCategories(payload) {
-  const { data } = await instance.get(
-    `/gift-cards?page=${payload.page}&perPage=${payload.perPage}`
-  );
+  const { data } = await instance.get(`/gift-cards?${payload}`);
   return data;
 }
 
@@ -48,5 +46,10 @@ export const deleteGiftCardCategory = async function (payload) {
   const { data } = await instance.delete(`/gift-cards/category/delete`, {
     data: payload,
   });
+  return data;
+};
+
+export const uploadFile = async function (file) {
+  const data = await instance.post(`/media/create`, file);
   return data;
 };

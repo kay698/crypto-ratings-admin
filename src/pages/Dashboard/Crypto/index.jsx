@@ -15,14 +15,17 @@ import {
   deleteCrypto,
   getAllCrypto,
   updateCrypto,
+  uploadFile,
 } from "../../../network/crypto";
 import { ModalWrapper } from "../../../components/ModalStylesWrap";
 import { SmileOutlined, LoadingOutlined } from "@ant-design/icons";
 import { currencies, getCurrncy } from "../../../utils/dataHelpers/selectData";
+import UploadImageIcon from "../../../assets/pngs/uploadImage.png";
 
 function Crypto() {
-  const [searching, setSearching] = useState(false);
+  const [saveSearch, setSaveSearch] = useState();
   const [searchResults, setSearchResults] = useState();
+  const [searching, setSearching] = useState(false);
   const [showAddNewCrypto, setShowAddNewCrypto] = useState(false);
   const [showDeleteCrypto, setShowDeleteCrypto] = useState(false);
   const [showEditCrypto, setShowEditCrypto] = useState(false);
@@ -31,6 +34,8 @@ function Crypto() {
   const [currency, setCurrency] = useState();
   const [editForm] = Form.useForm();
   const [cryptoId, setCryptoId] = useState("");
+  const [image, setImage] = useState();
+  const [pictureLoading, setPictureLoading] = useState(false);
 
   const handleCurrencyCategory = (value) => {
     setCurrency(value);
@@ -42,6 +47,7 @@ function Crypto() {
       title: val.title,
     });
     setCurrency(val.currency);
+    setImage(val.logo);
     setCryptoId(val._id);
     setShowEditCrypto(true);
   };
@@ -111,6 +117,7 @@ function Crypto() {
     setIsLoading(true);
     const payload = {
       ...values,
+      logo: image,
       currency: currency,
     };
     try {
@@ -149,6 +156,7 @@ function Crypto() {
     const payload = {
       ...values,
       currency: currency,
+      logo: image,
       cryptoId: cryptoId,
     };
     try {
@@ -213,24 +221,72 @@ function Crypto() {
       }
     }
   }
-  // const handleSearch = async (value) => {
-  //   if (value.searchResults === "") {
-  //     return;
-  //   }
-  //   setSearching(true);
-  //   try {
-  //     const data = await searchTeam(
-  //       businessOwner?.businessId,
-  //       value.searchResults
-  //     );
 
-  //     setSearching(false);
-  //     setSearchResults(data);
-  //   } catch (e) {
-  //     setSearching(false);
-  //     console.log(e);
-  //   }
-  // };
+  const searchChange = (e) => {
+    const { value } = e.target;
+    if (!!value) {
+      setSaveSearch(value);
+    } else {
+      setSaveSearch("");
+      setSearchResults();
+    }
+  };
+
+  const handleSearch = async () => {
+    setSearching(true);
+    const payload = `page=1&perPage=1000&query=${saveSearch}`;
+    try {
+      const { data } = await getAllCrypto(payload);
+
+      setSearching(false);
+      setSearchResults(data?.data);
+    } catch (e) {
+      setSearching(false);
+      console.log(e);
+    }
+  };
+
+  async function handleImage(event) {
+    setPictureLoading(true);
+    const maxFileLimit = 512000; // 64kb
+    if (event.target.files[0].type.indexOf("image") < 0) {
+      notification.open({
+        message: "Error",
+        description: "Only Images are allowed. Please upload an image instead.",
+        icon: <SmileOutlined style={{ color: "red" }} />,
+      });
+      return;
+    }
+    if (event.target.files[0].size > maxFileLimit) {
+      notification.open({
+        message: "Error",
+        description: "File is too large, Max file size is 64kb",
+        icon: <SmileOutlined style={{ color: "red" }} />,
+      });
+      return;
+    }
+    const { files } = event.target;
+    const formData = new FormData();
+    formData.append("file", files[0]);
+
+    try {
+      const { data } = await uploadFile(formData);
+      setPictureLoading(false);
+      setImage(data);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        console.log(error.response.data);
+        // notification.open({
+        //   message: "Error",
+        //   description: "Only Images are allowed. Please upload an image instead.",
+        //   icon: <SmileOutlined style={{ color: "red" }} />,
+        // });
+      } else {
+        console.log(error);
+        setPictureLoading(false);
+      }
+    }
+  }
 
   return (
     <DashboardLayout>
@@ -251,6 +307,18 @@ function Crypto() {
                 height="50px"
                 radius="8px"
                 prefix={<BiSearch />}
+                onChange={searchChange}
+                suffix={
+                  !!saveSearch && (
+                    <Button
+                      width="max-content"
+                      height="40px"
+                      onClick={handleSearch}
+                    >
+                      Search
+                    </Button>
+                  )
+                }
               />
               <Button
                 height="50px"
@@ -261,10 +329,12 @@ function Crypto() {
               </Button>
             </FlexibleDiv>
           </FlexibleDiv>
+
           <CustomTable
             func={getAllCrypto}
             columns={columns}
             searchResults={searchResults}
+            searching={searching}
           />
         </FlexibleDiv>
       </CryptoStyles>
@@ -335,6 +405,34 @@ function Crypto() {
                     </Select.Option>
                   ))}
                 </Select>
+              </FlexibleDiv>
+
+              <FlexibleDiv flexDir="column" margin="0 0 10px 0">
+                <span className="label">Upload Image</span>
+
+                {pictureLoading ? (
+                  <LoadingOutlined />
+                ) : (
+                  <>
+                    {" "}
+                    <label htmlFor="addImage">
+                      <FlexibleDiv
+                        className="imageWrap"
+                        width="max-content"
+                        height="max-content"
+                      >
+                        <img src={image || UploadImageIcon} alt="" />
+                      </FlexibleDiv>
+                    </label>
+                    <Input
+                      hidden
+                      type="file"
+                      id={"addImage"}
+                      name="file"
+                      onChange={handleImage}
+                    />{" "}
+                  </>
+                )}
               </FlexibleDiv>
 
               <Button type="primary" htmlType="submit" width="100%">
@@ -413,6 +511,34 @@ function Crypto() {
                     </Select.Option>
                   ))}
                 </Select>
+              </FlexibleDiv>
+
+              <FlexibleDiv flexDir="column" margin="0 0 10px 0">
+                <span className="label">Edit Image</span>
+
+                {pictureLoading ? (
+                  <LoadingOutlined />
+                ) : (
+                  <>
+                    {" "}
+                    <label htmlFor="addImage">
+                      <FlexibleDiv
+                        className="imageWrap"
+                        width="max-content"
+                        height="max-content"
+                      >
+                        <img src={image || UploadImageIcon} alt="" />
+                      </FlexibleDiv>
+                    </label>
+                    <Input
+                      hidden
+                      type="file"
+                      id={"addImage"}
+                      name="file"
+                      onChange={handleImage}
+                    />{" "}
+                  </>
+                )}
               </FlexibleDiv>
 
               <Button type="primary" htmlType="submit" width="100%">

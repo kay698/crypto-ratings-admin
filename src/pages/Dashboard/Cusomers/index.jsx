@@ -19,8 +19,9 @@ import { SmileOutlined } from "@ant-design/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 function Customers() {
-  const [searching, setSearching] = useState(false);
+  const [saveSearch, setSaveSearch] = useState();
   const [searchResults, setSearchResults] = useState();
+  const [searching, setSearching] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
   const [customerData, setCustomerData] = useState("");
   const [showDeleteCustomer, setShowDeleteCustomer] = useState(false);
@@ -103,24 +104,29 @@ function Customers() {
     },
   ];
 
-  // const handleSearch = async (value) => {
-  //   if (value.searchResults === "") {
-  //     return;
-  //   }
-  //   setSearching(true);
-  //   try {
-  //     const data = await searchTeam(
-  //       businessOwner?.businessId,
-  //       value.searchResults
-  //     );
+  const searchChange = (e) => {
+    const { value } = e.target;
+    if (!!value) {
+      setSaveSearch(value);
+    } else {
+      setSaveSearch("");
+      setSearchResults();
+    }
+  };
+  const handleSearch = async (value) => {
+    setSearching(true);
+    const payload = `page=1&perPage=1000&query=${saveSearch}`;
+    try {
+      const { data } = await getAllUsers(payload);
 
-  //     setSearching(false);
-  //     setSearchResults(data);
-  //   } catch (e) {
-  //     setSearching(false);
-  //     console.log(e);
-  //   }
-  // };
+      setSearching(false);
+      setSearchResults(data?.data);
+    } catch (e) {
+      setSearching(false);
+      console.log(e);
+    }
+  };
+
   const closeDrawer = () => {
     setShowDrawer(false);
     window.location.reload();
@@ -194,6 +200,7 @@ function Customers() {
       }
     }
   }
+
   return (
     <DashboardLayout>
       <CustomersStyles>
@@ -217,6 +224,18 @@ function Customers() {
                 height="50px"
                 radius="8px"
                 prefix={<BiSearch />}
+                onChange={searchChange}
+                suffix={
+                  !!saveSearch && (
+                    <Button
+                      width="max-content"
+                      height="40px"
+                      onClick={handleSearch}
+                    >
+                      Search
+                    </Button>
+                  )
+                }
               />
             </FlexibleDiv>
           </FlexibleDiv>
@@ -224,6 +243,7 @@ function Customers() {
             func={getAllUsers}
             columns={columns}
             searchResults={searchResults}
+            searching={searching}
           />
         </FlexibleDiv>
       </CustomersStyles>

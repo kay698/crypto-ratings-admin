@@ -11,9 +11,7 @@ export const updateCrypto = async function (payload) {
 };
 
 export const getAllCrypto = async function (payload) {
-  const data = await instance.get(
-    `/crypto?page=${payload.page}&perPage=${payload.perPage}`
-  );
+  const data = await instance.get(`/crypto?${payload}`);
   return data;
 };
 
@@ -26,5 +24,10 @@ export const deleteCrypto = async function (payload) {
   const { data } = await instance.delete(`/crypto/delete`, {
     data: payload,
   });
+  return data;
+};
+
+export const uploadFile = async function (file) {
+  const data = await instance.post(`/media/create`, file);
   return data;
 };
