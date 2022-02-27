@@ -169,6 +169,7 @@ function Customers() {
     setIsLoading(true);
     const payload = {
       ...values,
+      password: values.password || customerData?.password,
       userId: customerData._id,
     };
     try {
