@@ -1,38 +1,22 @@
-/* @font-face {
-  font-family: "KlikBold";
-  src: local("KlikBold"), local("Klik-Bold"),
-    url("./components/KlikFont/Klik-Bold.woff") format("woff");
+@font-face {
+  font-family: "ClashDisplay";
+  src: local("ClashDisplay"), local("Clash-Display"),
+    url("./assets/ClashDisplay/Fonts/OTF/ClashDisplay-Semibold.otf")
+      format("woff");
   font-weight: bold;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "KlikRegular";
-  src: local("KlikRegular"), local("Klik-Regular"),
-    url("./components/KlikFont/Klik-Regular.woff") format("woff");
+  font-family: "ClashGrotesk";
+  src: local("ClashGrotesk"), local("Clash-Grotesk"),
+    url("./assets/ClashGrotesk/Fonts/OTF/ClashGrotesk-Medium.otf")
+      format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
-
-@font-face {
-  font-family: "KlikLight";
-  src: local("KlikLight"), local("Klik-Light"),
-    url("./components/KlikFont/Klik-Light.woff") format("woff");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "KlikMedium";
-  src: local("KlikMedium"), local("Klik-Medium"),
-    url("./components/KlikFont/Klik-Medium.woff") format("woff");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-} */
 
 body {
   margin: 0;
@@ -54,24 +38,24 @@ body {
   font-variant-numeric: normal;
   letter-spacing: 0.4px;
 }
-/* p,
+p,
 span,
 small,
 input,
 strong,
-h3,
-h5,
-h4,
-div,
 svg,
 a {
-  font-family: "KlikRegular" !important;
+  font-family: "ClashGrotesk" !important;
 }
+
 h2,
-h1 {
-  font-family: "KlikBold" !important;
+h1,
+h3,
+h4,
+h5 {
+  font-family: "ClashDisplay" !important;
   font-weight: 700;
-} */
+}
 
 ::-webkit-scrollbar {
   width: 5px;
